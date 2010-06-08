@@ -1,0 +1,28 @@
+# Maintainer: Florian Léger <florian6 dot leger at laposte dot fr>
+
+pkgname=nxt-python
+pkgver=1.1.2
+pkgrel=1
+pkgdesc="A Python driver/interface for the Lego Mindstorms NXT robot."
+arch=('any')
+url='http://code.google.com/p/nxt-python/'
+license=('GPL')
+depends=('python>=2.6')
+optdepends=('python-pybluez: for Bluetooth support'
+            'pyusb: for USB support'
+)
+makedepends=('setuptools')
+conflicts=("lejos_nxj")
+source=("http://nxt-python.googlecode.com/files/${pkgname}-${pkgver}.zip"
+        "70-lego.rules"
+)
+md5sums=('2f2212061c0114460813c485c9ef3c60'
+         'c449bd90ace95fa03b04c8d4e46fd613')
+install="${pkgname}.install"
+
+build() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+  python setup.py install --root="${pkgdir}" --optimize=1 || return 1
+  install -m644 -D ${srcdir}/70-lego.rules ${pkgdir}/etc/udev/rules.d/70-lego.rules || return 1
+}
+
