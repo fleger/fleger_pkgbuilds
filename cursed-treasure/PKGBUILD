@@ -1,12 +1,12 @@
-# Maintainer: Florian Léger <florian dot leger at insa dash rouen dot fr>
+# Maintainer: Florian Léger <florian6 dot leger at laposte dot net>
 
 pkgname=cursed-treasure
-pkgver=1.06C
+pkgver=1.06D
 pkgrel=1
-pkgdesc='A neat TD game with new twists (Flash game).'
+pkgdesc='A neat Tower Defense game with new twists (Flash game).'
 arch=('i686' 'x86_64')
 url='http://www.iriysoft.ru/'
-license=('unknown')
+license=('custom')
 depends=()
 [ "$CARCH" = i686   ] && depends=('flashplayer-standalone')
 [ "$CARCH" = x86_64 ] && depends=('bin32-flashplayer-standalone')
@@ -16,10 +16,10 @@ source=("${_baseurl}/${_swf}"
         "${pkgname}.desktop"
         "${pkgname}.png"
         "${pkgname}.sh")
-md5sums=('77de342b99cb7e14953c346894e60c11'
-         '5d516321c13a70842e474d113176d7e1'
-         '71f850e4f0f335cb0578ab41170fada6'
-         '19fef6cbf570380bacacd33c76505638')
+md5sums=('855382145c580b5cb519563cd0373b46'
+         '42e68388a482b0723096d076d3d39c40'
+         '800d9ce68c863241ce4672dfcd2bdfbe'
+         '00ba354d05d6ecf886522f11cc608b7f')
 
 build() {
   # Install the .swf file
