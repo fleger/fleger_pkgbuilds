@@ -1,0 +1,68 @@
+# Maintainer: Florian Léger <florian6 dot leger at laposte dot net>
+pkgname=foobar2000
+pkgver=1.0.3
+pkgrel=3
+pkgdesc="An advanced freeware audio player (uses Wine)."
+arch=(i686 x86_64)
+url="http://www.foobar2000.org/"
+license=('custom')
+depends=()
+[ "$CARCH" = i686   ] && depends=(wine)
+[ "$CARCH" = x86_64 ] && depends=(bin32-wine)
+makedepends=(p7zip)
+source=("http://download.oldapps.com/Foobar/${pkgname}_v${pkgver}.exe"
+        "LICENSE"
+        ${pkgname}.sh
+        "http://upload.wikimedia.org/wikipedia/en/7/7c/Foobar2000_Icon.svg"
+        ${pkgname}.desktop)
+noextract=()
+install=${pkgname}.install
+md5sums=('c274f3896585df5609bef0504f3a0f5e'
+         '91873c4c3115bdd1afcf52c3023dc896'
+         '63f65a22001873c7b765e06f6c66707f'
+         'f417c64b07b55da01f06345861511386'
+         '138cb528cb0cad4e2764c3c77555369c')
+
+build() {
+    # Set up the environment
+    local tmpPath=${srcdir}/tmp
+    local tmpInstall=${tmpPath}/install
+    local tmpLocal=${tmpPath}/local
+    local tmpPrefix=${tmpPath}/env
+    local tmpExtracted=${tmpPath}/extracted
+    local missingComponents=("foo_fileops.dll" "foo_freedb2.dll" "foo_unpack.dll")
+
+    install -m755 -d ${tmpPath} ${tmpInstall} ${tmpPrefix} ${tmpLocal} || return 1
+    export WINEPREFIX=${tmpPrefix}
+    export XDG_DATA_HOME=${tmpLocal}
+
+    # Install foobar2000 in a temporary directory
+    WINEDEBUG=-all wine ${srcdir}/${pkgname}_v${pkgver}.exe /S /D=$(winepath -w ${tmpInstall}) || return 1
+
+    # Clean up the temporary installation and make the installation portable
+    rm ${tmpInstall}/user_profiles_enabled
+    rm ${tmpInstall}/installer.ini
+    rm ${tmpInstall}/uninstall.exe
+
+    # Copy foobar2000 installation
+    mkdir -p ${pkgdir}/usr/share/${pkgname}
+    cp -r ${tmpInstall}/* ${pkgdir}/usr/share/${pkgname} || return 1
+
+    # Extract and install the missing components
+    7z e -y -o${tmpExtracted} ${srcdir}/${pkgname}_v${pkgver}.exe || return 1
+    for component in "${missingComponents[@]}"; do
+        install -D -m644 ${tmpExtracted}/${component} ${pkgdir}/usr/share/${pkgname}/components/${component} || return 1
+    done
+
+    # Install the license
+    install -D -m644 ${srcdir}/LICENSE ${pkgdir}/usr/share/licenses/${pkgname}/LICENSE || return 1
+
+    # Install the script
+    install -D -m755 ${srcdir}/${pkgname}.sh ${pkgdir}/usr/bin/${pkgname} || return 1
+
+    # Install the icon
+    install -D -m644 ${srcdir}/Foobar2000_Icon.svg ${pkgdir}/usr/share/icons/${pkgname}.svg || return 1
+
+    # Install the .desktop
+    install -D -m644 ${srcdir}/${pkgname}.desktop ${pkgdir}/usr/share/applications/${pkgname}.desktop || return 1
+}
