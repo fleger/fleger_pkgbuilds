@@ -32,15 +32,15 @@ package() {
   install -m644 -t "${pkgdir}/usr/share/games/${pkgname}/dark/lfd" *.lfd || return 1
 
   # Restore a missing cutscene
-  install -D -m644 "$_cddir/lecdemos/dfdemo/lfd/gearup.lfd" "${pkgdir}/usr/share/games/${pkgname}/dark/lfd/gearup.lfd"
-  install -D -m644 "$srcdir/cutscene.lst" "${pkgdir}/usr/share/games/${pkgname}/dark/cutscene.lst"
+  install -D -m644 "$_cddir/lecdemos/dfdemo/lfd/gearup.lfd" "${pkgdir}/usr/share/games/${pkgname}/dark/lfd/gearup.lfd" || return 1
+  install -D -m644 "$srcdir/cutscene.lst" "${pkgdir}/usr/share/games/${pkgname}/dark/cutscene.lst" || return 1
 
   # Use DOS32/A instead of DOS4/GW
-  ln -s "/usr/share/dos32a/dos32a.exe" "${pkgdir}/usr/share/games/${pkgname}/dark/dos4gw.exe"
+  ln -s "/usr/share/dos32a/dos32a.exe" "${pkgdir}/usr/share/games/${pkgname}/dark/dos4gw.exe" || return 1
 
   # Tell Dark Forces to look at drive d
-  install -D -m644 "$srcdir/drive.cd" "${pkgdir}/usr/share/games/${pkgname}/dark/drive.cd"
+  install -D -m644 "$srcdir/drive.cd" "${pkgdir}/usr/share/games/${pkgname}/dark/drive.cd" || return 1
 
-  install -D -m755 "$srcdir/$pkgname.sh" "$pkgdir/usr/bin/$pkgname"
+  install -D -m755 "$srcdir/$pkgname.sh" "$pkgdir/usr/bin/$pkgname" || return 1
 }
 
