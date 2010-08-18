@@ -1,0 +1,46 @@
+# Maintainer: Florian Léger <florian6 dot leger at laposte dot net>
+
+pkgname=dark-forces
+pkgver=1.0
+pkgrel=1
+pkgdesc="FPS set in the Star Wars universe (uses DOSBox)"
+arch=("any")
+depends=("dosbox" "dos32a")
+license=("custom")
+url="http://www.lucasarts.com"
+md5sums=('f623e75af30e62bbd73d6df5b50bb7b5'
+         'f46ca20bf1fc9d420b959c693947c6fc'
+         'd092d7967175f9095d93d40263dcbc02')
+source=("drive.cd"
+        "cutscene.lst"
+        "${pkgname}.sh")
+
+# Change this to the path where your Dark Forces CD is mounted
+_cddir="$HOME/media/Dark_Forces.iso"
+
+package() {
+  install -D -d "${pkgdir}/usr/share/games/${pkgname}/dark/lfd" || return 1
+  cd "$_cddir" || return 1
+
+  install -D -m644 "cd.id" "${pkgdir}/usr/share/games/${pkgname}/cd.id" || return 1
+  install -m644 -t "${pkgdir}/usr/share/games/${pkgname}/dark" install.exe bootmkr.exe readme.txt || return 1
+
+  cd dark
+  install -m644 -t "${pkgdir}/usr/share/games/${pkgname}/dark" *.gob *.ini *.cfg *.msg dark.exe imuse.exe || return 1
+
+  cd lfd
+  install -m644 -t "${pkgdir}/usr/share/games/${pkgname}/dark/lfd" *.lfd || return 1
+
+  # Restore a missing cutscene
+  install -D -m644 "$_cddir/lecdemos/dfdemo/lfd/gearup.lfd" "${pkgdir}/usr/share/games/${pkgname}/dark/lfd/gearup.lfd"
+  install -D -m644 "$srcdir/cutscene.lst" "${pkgdir}/usr/share/games/${pkgname}/dark/cutscene.lst"
+
+  # Use DOS32/A instead of DOS4/GW
+  ln -s "/usr/share/dos32a/dos32a.exe" "${pkgdir}/usr/share/games/${pkgname}/dark/dos4gw.exe"
+
+  # Tell Dark Forces to look at drive d
+  install -D -m644 "$srcdir/drive.cd" "${pkgdir}/usr/share/games/${pkgname}/dark/drive.cd"
+
+  install -D -m755 "$srcdir/$pkgname.sh" "$pkgdir/usr/bin/$pkgname"
+}
+
