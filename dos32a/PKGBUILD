@@ -8,7 +8,7 @@ arch=("any")
 license=("custom")
 url="http://dos32a.narechk.net"
 md5sums=('f37ae16b8eab499edb6b0de0099827ca')
-source=("http://download.narechk.net/dos32a-${pkgver//./}-bin.zip")
+source=("http://download.narechk.net/${pkgname}-${pkgver//./}-bin.zip")
 
 package() {
   cd "$srcdir"
