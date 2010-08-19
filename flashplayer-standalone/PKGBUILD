@@ -1,4 +1,4 @@
-# Maintainer:
+# Maintainer: Florian Léger <florian6 dot leger at laposte dot net>
 # Contributor: osily <ly50247@gmail.com>
 
 pkgname=flashplayer-standalone
@@ -12,12 +12,13 @@ source=("http://download.macromedia.com/pub/flashplayer/updaters/10/flashplayer_
         "gflashplayer.png"
         "flashplayer.desktop")
 arch=('i686')
-md5sums=('0ec114ff472287b6cf5c271d3ef7efbb'
+md5sums=('d58901fe131c1e4ecaf93a0aafa63f6f'
          'b6b218eacdb3bc2efae9292526a8cd05'
-         '42ae23f68eb7b7544ccf36ccf31c21dd')
+         'd2d004343a89d221a6afb8a8b725b016')
+
 options=(!strip)
 
-package() {
+build() {
   cd "${srcdir}"
   install -D -m755 flashplayer "${pkgdir}/usr/bin/flashplayer" || return 1
   install -D -m644 flashplayer.desktop "${pkgdir}/usr/share/applications/flashplayer.desktop" || return 1
