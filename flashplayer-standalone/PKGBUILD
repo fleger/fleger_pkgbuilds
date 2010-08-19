@@ -1,0 +1,25 @@
+# Maintainer:
+# Contributor: osily <ly50247@gmail.com>
+
+pkgname=flashplayer-standalone
+pkgver=10.1.82.76
+pkgrel=1
+pkgdesc="Macromedia standalone flash player (nonfree)"
+url="http://www.adobe.com/support/flashplayer/downloads.html"
+license="custom"
+depends=('curl' 'gtk2' 'libxdamage' 'libxt' 'nss')
+source=("http://download.macromedia.com/pub/flashplayer/updaters/10/flashplayer_10_sa.tar.gz"
+        "gflashplayer.png"
+        "flashplayer.desktop")
+arch=('i686')
+md5sums=('0ec114ff472287b6cf5c271d3ef7efbb'
+         'b6b218eacdb3bc2efae9292526a8cd05'
+         '42ae23f68eb7b7544ccf36ccf31c21dd')
+options=(!strip)
+
+package() {
+  cd "${srcdir}"
+  install -D -m755 flashplayer "${pkgdir}/usr/bin/flashplayer" || return 1
+  install -D -m644 flashplayer.desktop "${pkgdir}/usr/share/applications/flashplayer.desktop" || return 1
+  install -D -m644 gflashplayer.png "${pkgdir}/usr/share/pixmaps/gflashplayer.png" || return 1
+}
