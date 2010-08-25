@@ -1,68 +1,77 @@
 # Maintainer: Florian Léger <florian6 dot leger at laposte dot net>
 pkgname=foobar2000
-pkgver=1.0.3
-pkgrel=3
+pkgver=1.1
+pkgrel=1
 pkgdesc="An advanced freeware audio player (uses Wine)."
 arch=(i686 x86_64)
 url="http://www.foobar2000.org/"
 license=('custom')
 depends=()
-[ "$CARCH" = i686   ] && depends=(wine)
-[ "$CARCH" = x86_64 ] && depends=(bin32-wine)
+depends=(wine)
 makedepends=(p7zip)
-source=("http://download.oldapps.com/Foobar/${pkgname}_v${pkgver}.exe"
+source=("http://www.free-codecs.com/download_soft.php?d=5610"
+#         "http://download.oldapps.com/Foobar/${pkgname}_v${pkgver}.exe"
         "LICENSE"
         ${pkgname}.sh
         "http://upload.wikimedia.org/wikipedia/en/7/7c/Foobar2000_Icon.svg"
-        ${pkgname}.desktop)
+        ${pkgname}.desktop
+)
 noextract=()
 install=${pkgname}.install
-md5sums=('c274f3896585df5609bef0504f3a0f5e'
+
+md5sums=('f5af2994bafccd2c525d0d28d63251f3'             # Checked against the binary provided by the official site
          '91873c4c3115bdd1afcf52c3023dc896'
          '63f65a22001873c7b765e06f6c66707f'
          'f417c64b07b55da01f06345861511386'
-         '138cb528cb0cad4e2764c3c77555369c')
+         '138cb528cb0cad4e2764c3c77555369c'
+)
 
 build() {
     # Set up the environment
-    local tmpPath=${srcdir}/tmp
-    local tmpInstall=${tmpPath}/install
-    local tmpLocal=${tmpPath}/local
-    local tmpPrefix=${tmpPath}/env
-    local tmpExtracted=${tmpPath}/extracted
-    local missingComponents=("foo_fileops.dll" "foo_freedb2.dll" "foo_unpack.dll")
+    local tmpdir="${srcdir}/foobar2000"
+    local -A files
+    files=(['foobar2000.exe']='' ['foobar2000 Shell Associations Updater.exe']='' ['Query Syntax Help.html']='' ['shared.dll']=''
+           ['titleformat_help.css']='' ['titleformat_help.html']='' ['zlib1.dll']='' ['foo_albumlist.dll']='components'
+           ['foo_cdda.dll']='components' ['foo_converter.dll']='components' ['foo_dsp_std.dll']='components'
+           ['foo_fileops.dll']='components' ['foo_freedb2.dll']='components' ['foo_input_std.dll']='components'
+           ['foo_rgscan.dll']='components' ['foo_ui_std.dll']='components' ['foo_unpack.dll']='components' ['aac.ico']='icons'
+           ['ape.ico']='icons' ['apl.ico']='icons' ['cda.ico']='icons' ['cue.ico']='icons' ['flac.ico']='icons' ['fpl.ico']='icons'
+           ['fth.ico']='icons' ['generic.ico']='icons' ['m3u8.ico']='icons' ['m3u.ico']='icons' ['m4a.ico']='icons' ['mp2.ico']='icons'
+           ['mp3.ico']='icons' ['mp4.ico']='icons' ['mpc.ico']='icons' ['ogg.ico']='icons' ['pls.ico']='icons' ['wav.ico']='icons'
+           ['wma.ico']='icons' ['wv.ico']='icons' ['Album List + Properties.fth']='themes'
+           ['Album List + Properties (tabbed).fth']='themes' ['Album List + Properties (tabbed) + Visualisations.fth']='themes'
+           ['Album List + Properties + Visualisations.fth']='themes' ['Album List + Visualisation (alternate).fth']='themes'
+           ['Album List + Visualisation.fth']='themes' ['Black.fth']='themes' ['Blue.fth']='themes' ['Dark Blue.fth']='themes'
+           ['Dark Grey Magenta.fth']='themes' ['Dark Grey Orange.fth']='themes' ['Dark Orange.fth']='themes'
+           ['Default Playlist.fth']='themes' ['Faded.fth']='themes' ['Forum.fth']='themes' ['Gray.fth']='themes'
+           ['Gray Orange.fth']='themes' ['Group by Albums.fth']='themes' ['Hello Kitty.fth']='themes' ['Olive.fth']='themes'
+           ['Orange.fth']='themes' ['Pastel Green.fth']='themes' ['Separate Album & Artist Columns.fth']='themes'
+           ['Shades of Grey.fth']='themes' ['Simple Playlist + Tabs.fth']='themes' ['Slim View + Tabs.fth']='themes'
+           ['System Default.fth']='themes' ['Vintage.fth']='themes' ['Visualisation + Cover Art + Tabs.fth']='themes'
+           ['White.fth']='themes' ['Yellow.fth']='themes'
+    )
+    local f
 
-    install -m755 -d ${tmpPath} ${tmpInstall} ${tmpPrefix} ${tmpLocal} || return 1
-    export WINEPREFIX=${tmpPrefix}
-    export XDG_DATA_HOME=${tmpLocal}
+    mkdir -p "${tmpdir}" || return 1
 
-    # Install foobar2000 in a temporary directory
-    WINEDEBUG=-all wine ${srcdir}/${pkgname}_v${pkgver}.exe /S /D=$(winepath -w ${tmpInstall}) || return 1
+    # Extract foobar (7z x gives garbage)
+    7z e -y -o"${tmpdir}" "${srcdir}/${pkgname}_v${pkgver}.exe" || return 1
 
-    # Clean up the temporary installation and make the installation portable
-    rm ${tmpInstall}/user_profiles_enabled
-    rm ${tmpInstall}/installer.ini
-    rm ${tmpInstall}/uninstall.exe
-
-    # Copy foobar2000 installation
-    mkdir -p ${pkgdir}/usr/share/${pkgname}
-    cp -r ${tmpInstall}/* ${pkgdir}/usr/share/${pkgname} || return 1
-
-    # Extract and install the missing components
-    7z e -y -o${tmpExtracted} ${srcdir}/${pkgname}_v${pkgver}.exe || return 1
-    for component in "${missingComponents[@]}"; do
-        install -D -m644 ${tmpExtracted}/${component} ${pkgdir}/usr/share/${pkgname}/components/${component} || return 1
+    # Installation
+    for f in "${!files[@]}"; do
+        install -D -m644 "${tmpdir}/${f}" """${pkgdir}/usr/share/${pkgname}/${files["$f"]}/${f}""" || return 1
+#         rm "${tmpdir}/${f}"
     done
 
     # Install the license
-    install -D -m644 ${srcdir}/LICENSE ${pkgdir}/usr/share/licenses/${pkgname}/LICENSE || return 1
+    install -D -m644 "${srcdir}/LICENSE" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE" || return 1
 
     # Install the script
-    install -D -m755 ${srcdir}/${pkgname}.sh ${pkgdir}/usr/bin/${pkgname} || return 1
+    install -D -m755 "${srcdir}/${pkgname}.sh" "${pkgdir}/usr/bin/${pkgname}" || return 1
 
     # Install the icon
-    install -D -m644 ${srcdir}/Foobar2000_Icon.svg ${pkgdir}/usr/share/icons/${pkgname}.svg || return 1
+    install -D -m644 "${srcdir}/Foobar2000_Icon.svg" "${pkgdir}/usr/share/icons/${pkgname}.svg" || return 1
 
     # Install the .desktop
-    install -D -m644 ${srcdir}/${pkgname}.desktop ${pkgdir}/usr/share/applications/${pkgname}.desktop || return 1
+    install -D -m644 "${srcdir}/${pkgname}.desktop" "${pkgdir}/usr/share/applications/${pkgname}.desktop" || return 1
 }
