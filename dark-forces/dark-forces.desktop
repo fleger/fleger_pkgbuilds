@@ -1,0 +1,14 @@
+[Desktop Entry]
+Name=Dark Forces
+GenericName=First person shooter
+Comment=First person shooter set in the Star Wars universe.
+Comment[fr]=FPS dans l'univers Star Wars.
+Encoding=UTF-8
+Version=1.0
+Type=Application
+Terminal=false
+Icon=dark-forces
+Exec=dark-forces
+Categories=Game;ActionGame;
+
+
