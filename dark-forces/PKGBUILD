@@ -8,12 +8,16 @@ arch=("any")
 depends=("dosbox" "dos32a")
 license=("custom")
 url="http://www.lucasarts.com"
-md5sums=('f623e75af30e62bbd73d6df5b50bb7b5'
-         'f46ca20bf1fc9d420b959c693947c6fc'
-         'd092d7967175f9095d93d40263dcbc02')
 source=("drive.cd"
         "cutscene.lst"
-        "${pkgname}.sh")
+        "${pkgname}.sh"
+        "${pkgname}.desktop"
+        "${pkgname}.png")
+md5sums=('f623e75af30e62bbd73d6df5b50bb7b5'
+         'f46ca20bf1fc9d420b959c693947c6fc'
+         'd092d7967175f9095d93d40263dcbc02'
+         '8cbf814c1966de63e580488e2c60d45a'
+         '341b165346b0ed1769fa012b9f8b2d9e')
 
 # Change this to the path where your Dark Forces CD is mounted
 _cddir="$HOME/media/Dark_Forces.iso"
@@ -39,8 +43,14 @@ package() {
   ln -s "/usr/share/dos32a/dos32a.exe" "${pkgdir}/usr/share/games/${pkgname}/dark/dos4gw.exe" || return 1
 
   # Tell Dark Forces to look at drive d
-  install -D -m644 "$srcdir/drive.cd" "${pkgdir}/usr/share/games/${pkgname}/dark/drive.cd" || return 1
+  install -D -m644 "$startdir/drive.cd" "${pkgdir}/usr/share/games/${pkgname}/dark/drive.cd" || return 1
 
-  install -D -m755 "$srcdir/$pkgname.sh" "$pkgdir/usr/bin/$pkgname" || return 1
+  install -D -m755 "$startdir/$pkgname.sh" "$pkgdir/usr/bin/$pkgname" || return 1
+
+  # Install .desktop file
+  install -D -m644 ${startdir}/${pkgname}.desktop ${pkgdir}/usr/share/applications/${pkgname}.desktop || return 1
+
+  # Install icon
+  install -D -m644 ${startdir}/${pkgname}.png ${pkgdir}/usr/share/icons/${pkgname}.png || return 1
 }
 
