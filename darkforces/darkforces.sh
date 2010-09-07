@@ -1,7 +1,7 @@
 # /bin/bash
 
-sysdir="/usr/share/games/dark-forces"
-usrdir="$HOME/.dark-forces"
+sysdir="/usr/share/games/darkforces"
+usrdir="$HOME/.darkforces"
 
 symlinks=(bootmkr.exe dark.exe dos4gw.exe drive.cd imuse.exe install.exe readme.txt)
 copies=(imuse.ini jedi.cfg local.msg)
@@ -11,11 +11,11 @@ if [ ! -d "$usrdir" ]; then
 fi
 
 for f in "${symlinks[@]}"; do
-    cp -urs "$sysdir/dark/$f" "$usrdir" 2&> /dev/null
+    cp -urs "$sysdir/dark/$f" "$usrdir" 2> /dev/null
 done
 
 for f in "${copies[@]}"; do
-    cp -ur "$sysdir/dark/$f" "$usrdir" 2&> /dev/null
+    cp -ur "$sysdir/dark/$f" "$usrdir" 2> /dev/null
 done
 
 dosboxMainConfig="$(dosbox -printconf)"

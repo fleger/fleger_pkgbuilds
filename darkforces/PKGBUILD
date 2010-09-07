@@ -1,6 +1,6 @@
 # Maintainer: Florian Léger <florian6 dot leger at laposte dot net>
 
-pkgname=dark-forces
+pkgname=darkforces
 pkgver=1.0
 pkgrel=1
 pkgdesc="FPS set in the Star Wars universe (uses DOSBox)"
@@ -15,8 +15,8 @@ source=("drive.cd"
         "${pkgname}.png")
 md5sums=('f623e75af30e62bbd73d6df5b50bb7b5'
          'f46ca20bf1fc9d420b959c693947c6fc'
-         'd092d7967175f9095d93d40263dcbc02'
-         '8cbf814c1966de63e580488e2c60d45a'
+         '7bb6e601d7d64dab8dcce4c46940120f'
+         'c83bba7db01bbe4037284d1b354dba66'
          '341b165346b0ed1769fa012b9f8b2d9e')
 
 # Change this to the path where your Dark Forces CD is mounted
