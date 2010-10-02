@@ -1,7 +1,7 @@
 # Maintainer: Florian Léger <florian6.leger@laposte.net>
 pkgname=ashd
 pkgver=0.1
-pkgrel=2
+pkgrel=3
 pkgdesc="A Sane HTTP daemon."
 arch=(i686 x86_64)
 url="http://www.dolda2000.com/~fredrik/ashd/"
@@ -9,7 +9,7 @@ license=('GPL')
 source=(http://www.dolda2000.com/~fredrik/${pkgname}/${pkgname}-${pkgver}.tar.gz
         ashd
         ashd.conf)
-depends=(gnutls)
+depends=(gnutls file)
 makedepends=(valgrind)
 md5sums=('c49370ce3f617013ae8529d1632e1089'
          'a175e094184e7a244701ed656fc3b7b3'
