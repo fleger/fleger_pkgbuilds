@@ -1,0 +1,20 @@
+# Maintainer: Florian Léger <florian dot leger at insa dash rouen dot fr>
+
+pkgname=pyrss2gen
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="An implementation of Dijkstra's single-source shortest-paths algorithm written in Python."
+arch=('any')
+url='http://www.dalkescientific.com/Python/PyRSS2Gen.html'
+license=('BSD')
+depends=('python')
+makedepends=('setuptools')
+source=("http://www.dalkescientific.com/Python/PyRSS2Gen-${pkgver}.tar.gz")
+md5sums=('b37ed0c9cfa4438a73dbbb0207f3aff6')
+
+build() {
+  cd "$srcdir/PyRSS2Gen-$pkgver"
+  install -Dm644 LICENSE ${pkgdir}/usr/share/license/${pkgname}/LICENSE
+  python setup.py install --root="$pkgdir" || return 1
+}
+
