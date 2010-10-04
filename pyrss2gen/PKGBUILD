@@ -1,9 +1,9 @@
-# Maintainer: Florian Léger <florian dot leger at insa dash rouen dot fr>
+# Maintainer: Florian Léger <florian6 dot leger at laposte dot net>
 
 pkgname=pyrss2gen
 pkgver=1.0.0
-pkgrel=1
-pkgdesc="An implementation of Dijkstra's single-source shortest-paths algorithm written in Python."
+pkgrel=2
+pkgdesc="A Python library for generating RSS 2.0 feeds."
 arch=('any')
 url='http://www.dalkescientific.com/Python/PyRSS2Gen.html'
 license=('BSD')
