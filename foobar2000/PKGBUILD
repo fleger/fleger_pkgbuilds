@@ -1,13 +1,13 @@
 # Maintainer: Florian Léger <florian6 dot leger at laposte dot net>
 pkgname=foobar2000
 pkgver=1.1
-pkgrel=1
+pkgrel=2
 pkgdesc="An advanced freeware audio player (uses Wine)."
-arch=(i686 x86_64)
+arch=(any)
 url="http://www.foobar2000.org/"
 license=('custom')
 depends=()
-depends=(wine)
+depends=(wine desktop-file-utils)
 makedepends=(p7zip)
 source=("http://www.free-codecs.com/download_soft.php?d=5610"
 #         "http://download.oldapps.com/Foobar/${pkgname}_v${pkgver}.exe"
