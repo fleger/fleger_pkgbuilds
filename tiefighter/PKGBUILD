@@ -1,0 +1,54 @@
+# Maintainer: Florian Léger <florian6 dot leger at laposte dot net>
+
+pkgname=tiefighter
+pkgver=1.0
+pkgrel=1
+pkgdesc="Space flight and combat simulator set in the Star Wars universe (uses DOSBox)"
+arch=("any")
+depends=("dosbox" "dos32a")
+makedepends=("unzip" "imagemagick")
+license=("custom")
+url="http://www.lucasarts.com"
+source=("tie.cd"
+        "${pkgname}.sh"
+        "${pkgname}.desktop"
+        "ftp://ftp.lucasarts.com/patches/pc/tiecdjoy.exe")
+md5sums=('d7b3bef2b612a677079d3a866ed03725'
+         '54fa3b1aa89bfb5baa3213c30b9b2c81'
+         '7392f5c2324eb9d30f25e469d56d717e'
+         '4153517873ca47afc92e12ed3005c826')
+
+# Change this to the path where your Tie Fighter CD is mounted
+_cddir="$HOME/media/Tie_Fighter_Collector's_Edition.iso"
+
+package() {
+  install -D -d "${pkgdir}/usr/share/games/${pkgname}" || return 1
+  cd "$_cddir" || return 1
+
+  local f
+  for f in detvesa.exe imuse.exe imuse.ini *.fnt *.tfr read.me *.dat tie.exe uvconfig.exe vga.pac z_tie2__.exe astream/* cp*/*.lfd cp*/*.pnl cp*/*.int mission/* res*/* voice/**/*
+  do
+    install -Dm644 "$f" "${pkgdir}/usr/share/games/${pkgname}/$f" || return 1
+  done
+
+  # Use DOS32/A instead of DOS4/GW
+  ln -s "/usr/share/dos32a/dos32a.exe" "${pkgdir}/usr/share/games/${pkgname}/dos4gw.exe" || return 1
+  
+  # Tell where Tie Fighter is installed
+  install -D -m644 "$srcdir/tie.cd" "${pkgdir}/usr/share/games/${pkgname}/tie.cd" || return 1
+
+  install -D -m755 "$srcdir/$pkgname.sh" "$pkgdir/usr/bin/$pkgname" || return 1
+
+  # Install .desktop file
+  install -D -m644 ${srcdir}/${pkgname}.desktop ${pkgdir}/usr/share/applications/${pkgname}.desktop || return 1
+
+  # Install icon
+  install -d "${pkgdir}/usr/share/icons/"
+  convert tie01.ico "${pkgdir}/usr/share/icons/${pkgname}.png" || return 1
+
+  # Apply joystick patch
+  cd "$srcdir"
+  unzip tiecdjoy.exe
+  install -Dm644 z_tie__.exe "${pkgdir}/usr/share/games/${pkgname}/z_tie__.exe" || return 1
+}
+
