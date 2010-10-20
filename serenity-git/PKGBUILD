@@ -1,7 +1,7 @@
 # Maintainer: Florian Léger <florian6 dot leger at laposte dot net>
 
 pkgname=serenity-git
-pkgver=20100818
+pkgver=20101009
 pkgrel=1
 pkgdesc="Command line driven automated episode renamer."
 arch=('any')
