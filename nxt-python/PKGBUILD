@@ -2,12 +2,12 @@
 
 pkgname=nxt-python
 pkgver=2.0.0
-pkgrel=1
+pkgrel=2
 pkgdesc="A Python driver/interface for the Lego Mindstorms NXT robot."
 arch=('any')
 url='http://code.google.com/p/nxt-python/'
 license=('GPL')
-depends=('python>=2.6')
+depends=('python2>=2.6')
 optdepends=('python-pybluez: for Bluetooth support'
             'pyusb: for USB support'
 )
@@ -22,7 +22,8 @@ install="${pkgname}.install"
 
 build() {
   cd "${srcdir}/${pkgname}-${pkgver}"
-  python setup.py install --root="${pkgdir}" --optimize=1 || return 1
+  find -type f -print0 | xargs -0 sed -i -e 's/#!\/usr\/bin\/env python/#!\/usr\/bin\/env python2/g'
+  python2 setup.py install --root="${pkgdir}" --optimize=1 || return 1
   install -m644 -D ${srcdir}/70-lego.rules ${pkgdir}/etc/udev/rules.d/70-lego.rules || return 1
 }
 
