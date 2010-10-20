@@ -1,6 +1,6 @@
 # Maintainer: Florian Léger <florian6.leger@laposte.net>
 pkgname=ashd
-pkgver=0.2
+pkgver=0.3
 pkgrel=1
 pkgdesc="A Sane HTTP daemon."
 arch=(i686 x86_64)
@@ -10,8 +10,7 @@ source=(http://www.dolda2000.com/~fredrik/${pkgname}/${pkgname}-${pkgver}.tar.gz
         ashd
         ashd.conf)
 depends=(gnutls file)
-makedepends=(valgrind)
-md5sums=('191b2079bd4d28fd8385906c541ec3b6'
+md5sums=('a7b6778dbec21061cded0c5613d76d7c'
          'a175e094184e7a244701ed656fc3b7b3'
          'f928fe34c998b7face9c4a1f4656b586')
 backup=(etc/conf.d/ashd.conf)
