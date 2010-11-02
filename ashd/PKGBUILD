@@ -1,6 +1,6 @@
 # Maintainer: Florian Léger <florian6.leger@laposte.net>
 pkgname=ashd
-pkgver=0.3
+pkgver=0.4
 pkgrel=1
 pkgdesc="A Sane HTTP daemon."
 arch=(i686 x86_64)
@@ -10,23 +10,27 @@ source=(http://www.dolda2000.com/~fredrik/${pkgname}/${pkgname}-${pkgver}.tar.gz
         ashd
         ashd.conf)
 depends=(gnutls file)
-md5sums=('a7b6778dbec21061cded0c5613d76d7c'
-         'a175e094184e7a244701ed656fc3b7b3'
+md5sums=('03e5d62694c2b2aba72e9a1e552f532d'
+         '6ed33e72b383690197794729803385aa'
          'f928fe34c998b7face9c4a1f4656b586')
 backup=(etc/conf.d/ashd.conf)
+options=('emptydirs')
 
 build() {
   cd "$srcdir/$pkgname-$pkgver"
 
-  ./configure --prefix=/usr
-  make
+  ./configure --prefix=/usr || return 1
+  make || return 1
 }
 
 package() {
   cd "$srcdir/$pkgname-$pkgver"
 
-  make DESTDIR="$pkgdir/" install
-
+  make DESTDIR="$pkgdir/" install || return 1
+  install -Dm644 etc/ashd/dirplex.rc "$pkgdir/etc/ashd/dirplex.rc"
+  install -Dm644 etc/ashd/apache-compat "$pkgdir/etc/ashd/apache-compat"
+  install -d "$pkgdir/etc/ashd/dirplex.d"
+ 
   cd "$srcdir"
   install -Dm755 ashd "$pkgdir/etc/rc.d/ashd"
   install -Dm644 ashd.conf "$pkgdir/etc/conf.d/ashd.conf"
