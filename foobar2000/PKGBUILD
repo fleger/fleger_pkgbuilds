@@ -1,7 +1,7 @@
 # Maintainer: Florian Léger <florian6 dot leger at laposte dot net>
 pkgname=foobar2000
-pkgver=1.1
-pkgrel=2
+pkgver=1.1.1
+pkgrel=1
 pkgdesc="An advanced freeware audio player (uses Wine)."
 arch=(any)
 url="http://www.foobar2000.org/"
@@ -9,7 +9,7 @@ license=('custom')
 depends=()
 depends=(wine desktop-file-utils)
 makedepends=(p7zip)
-source=("http://www.free-codecs.com/download_soft.php?d=5610"
+source=("http://www.free-codecs.com/download_soft.php?d=5887"
 #         "http://download.oldapps.com/Foobar/${pkgname}_v${pkgver}.exe"
         "LICENSE"
         ${pkgname}.sh
@@ -19,38 +19,25 @@ source=("http://www.free-codecs.com/download_soft.php?d=5610"
 noextract=()
 install=${pkgname}.install
 
-md5sums=('f5af2994bafccd2c525d0d28d63251f3'             # Checked against the binary provided by the official site
+md5sums=('aec63212687dbc817ffafa487854b85b'
          '91873c4c3115bdd1afcf52c3023dc896'
          '63f65a22001873c7b765e06f6c66707f'
          'f417c64b07b55da01f06345861511386'
-         '138cb528cb0cad4e2764c3c77555369c'
-)
+         '138cb528cb0cad4e2764c3c77555369c')
 
 build() {
     # Set up the environment
     local tmpdir="${srcdir}/foobar2000"
     local -A files
-    files=(['foobar2000.exe']='' ['foobar2000 Shell Associations Updater.exe']='' ['Query Syntax Help.html']='' ['shared.dll']=''
-           ['titleformat_help.css']='' ['titleformat_help.html']='' ['zlib1.dll']='' ['foo_albumlist.dll']='components'
-           ['foo_cdda.dll']='components' ['foo_converter.dll']='components' ['foo_dsp_std.dll']='components'
-           ['foo_fileops.dll']='components' ['foo_freedb2.dll']='components' ['foo_input_std.dll']='components'
-           ['foo_rgscan.dll']='components' ['foo_ui_std.dll']='components' ['foo_unpack.dll']='components' ['aac.ico']='icons'
-           ['ape.ico']='icons' ['apl.ico']='icons' ['cda.ico']='icons' ['cue.ico']='icons' ['flac.ico']='icons' ['fpl.ico']='icons'
-           ['fth.ico']='icons' ['generic.ico']='icons' ['m3u8.ico']='icons' ['m3u.ico']='icons' ['m4a.ico']='icons' ['mp2.ico']='icons'
-           ['mp3.ico']='icons' ['mp4.ico']='icons' ['mpc.ico']='icons' ['ogg.ico']='icons' ['pls.ico']='icons' ['wav.ico']='icons'
-           ['wma.ico']='icons' ['wv.ico']='icons' ['Album List + Properties.fth']='themes'
-           ['Album List + Properties (tabbed).fth']='themes' ['Album List + Properties (tabbed) + Visualisations.fth']='themes'
-           ['Album List + Properties + Visualisations.fth']='themes' ['Album List + Visualisation (alternate).fth']='themes'
-           ['Album List + Visualisation.fth']='themes' ['Black.fth']='themes' ['Blue.fth']='themes' ['Dark Blue.fth']='themes'
-           ['Dark Grey Magenta.fth']='themes' ['Dark Grey Orange.fth']='themes' ['Dark Orange.fth']='themes'
-           ['Default Playlist.fth']='themes' ['Faded.fth']='themes' ['Forum.fth']='themes' ['Gray.fth']='themes'
-           ['Gray Orange.fth']='themes' ['Group by Albums.fth']='themes' ['Hello Kitty.fth']='themes' ['Olive.fth']='themes'
-           ['Orange.fth']='themes' ['Pastel Green.fth']='themes' ['Separate Album & Artist Columns.fth']='themes'
-           ['Shades of Grey.fth']='themes' ['Simple Playlist + Tabs.fth']='themes' ['Slim View + Tabs.fth']='themes'
-           ['System Default.fth']='themes' ['Vintage.fth']='themes' ['Visualisation + Cover Art + Tabs.fth']='themes'
-           ['White.fth']='themes' ['Yellow.fth']='themes'
+
+    files=( ["/"]="foobar2000*.exe *.html *.css zlib1.dll shared.dll"
+        ["components"]="foo_*.dll"
+        ["icons"]="*.ico"
+        ["themes"]="*.fth"
     )
+    
     local f
+    local d
 
     mkdir -p "${tmpdir}" || return 1
 
@@ -58,9 +45,11 @@ build() {
     7z e -y -o"${tmpdir}" "${srcdir}/${pkgname}_v${pkgver}.exe" || return 1
 
     # Installation
-    for f in "${!files[@]}"; do
-        install -D -m644 "${tmpdir}/${f}" """${pkgdir}/usr/share/${pkgname}/${files["$f"]}/${f}""" || return 1
-#         rm "${tmpdir}/${f}"
+    cd "${tmpdir}"
+    for d in "${!files[@]}"; do
+          for f in ${files[$d]}; do
+                install -D -m644 "${tmpdir}/${f}" "${pkgdir}/usr/share/${pkgname}/${d}/${f}" || return 1
+          done
     done
 
     # Install the license
