@@ -20,12 +20,12 @@ cd "$sysdir"
 
 for f in "${!symlinks[@]}"; do
     mkdir -p "$usrdir/${symlinks[$f]}"
-    cp -urs "$sysdir/"$f "$usrdir/${symlinks[$f]}" #2> /dev/null
+    cp -urs "$sysdir/"$f "$usrdir/${symlinks[$f]}" 2> /dev/null
 done
 
 for f in "${!copies[@]}"; do
     mkdir -p "$usrdir/${copies[$f]}"
-    cp -nr $f "$usrdir/${copies[$f]}"   #2> /dev/null
+    cp -nr $f "$usrdir/${copies[$f]}"   2> /dev/null
 done
 
 dosboxMainConfig="$(dosbox -printconf)"

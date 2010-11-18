@@ -13,7 +13,7 @@ source=("${pkgname}.sh"
         "${pkgname}.desktop"
         "http://www.softicons.com/download/tv-movie-icons/star-wars-icons-by-archigraphs/png/512/XWing_archigraphs.png"
         )
-md5sums=('23f8816742a38e80b1e564b2dae18d16'
+md5sums=('3fa06d758e3a78b669333bada010b58f'
          '4f23cc4f9b78bd616fce15a995ad1ade'
          'e90c27f0ec3ebfa4fafa725c4c793403')
 
