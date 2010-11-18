@@ -1,11 +1,14 @@
-# /bin/bash
+#! /bin/bash
 
-sysdir="/usr/share/games/tiefighter"
-usrdir="$HOME/.tiefighter"
+shopt -s extglob
+
+game="tiefighter"
+sysdir="/usr/share/games/$game"
+usrdir="$HOME/.$game"
 firstRun=false
 
-declare -A symlinks=([tie.cd]="" [imuse.exe]=tiecd)
-declare -A copies=([imuse.ini]=tiecd [*.tfr]=tiecd)
+declare -A symlinks=([tie.cd]="" [imuse.exe]="tiecd")
+declare -A copies=([imuse.ini]="tiecd" [*.tfr]="tiecd")
 
 
 if [ ! -d "$usrdir" ]; then
@@ -20,7 +23,7 @@ done
 
 for f in "${!copies[@]}"; do
     mkdir -p "$usrdir/${copies[$f]}"
-    cp -ur "$usrdir/${copies[$f]}" "$sysdir/"$f  2> /dev/null
+    cp -nr "$usrdir/${copies[$f]}" "$sysdir/"$f  2> /dev/null
 done
 
 dosboxMainConfig="$(dosbox -printconf)"

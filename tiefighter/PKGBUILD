@@ -2,7 +2,7 @@
 
 pkgname=tiefighter
 pkgver=1.0
-pkgrel=1
+pkgrel=2
 pkgdesc="Space flight and combat simulator set in the Star Wars universe (uses DOSBox)"
 arch=("any")
 depends=("dosbox" "dos32a")
@@ -14,12 +14,15 @@ source=("tie.cd"
         "${pkgname}.desktop"
         "ftp://ftp.lucasarts.com/patches/pc/tiecdjoy.exe")
 md5sums=('d7b3bef2b612a677079d3a866ed03725'
-         '54fa3b1aa89bfb5baa3213c30b9b2c81'
+         '13172270256c86ce6d92d0aaf5c6dc3f'
          '7392f5c2324eb9d30f25e469d56d717e'
          '4153517873ca47afc92e12ed3005c826')
 
-# Change this to the path where your Tie Fighter CD is mounted
-_cddir="$HOME/media/Tie_Fighter_Collector's_Edition.iso"
+# Note: this PKGBUILD only works with the Tie Fighter Collector's CDROM edition of the game,
+# *not* with the Floppy Disks edition nor the X-Wing Collector Series edition.
+
+# Change this to the path where your Tie Fighter Collector's CDROM is mounted
+_cddir="$HOME/media/Star_Wars__Tie_Fighter_Collector's_CDROM_(US).iso/"
 
 package() {
   install -D -d "${pkgdir}/usr/share/games/${pkgname}" || return 1
@@ -28,19 +31,19 @@ package() {
   local f
   for f in detvesa.exe imuse.exe imuse.ini *.fnt *.tfr read.me *.dat tie.exe uvconfig.exe vga.pac z_tie2__.exe astream/* cp*/*.lfd cp*/*.pnl cp*/*.int mission/* res*/* voice/**/*
   do
-    install -Dm644 "$f" "${pkgdir}/usr/share/games/${pkgname}/$f" || return 1
+    install -Dm644 "${f}" "${pkgdir}/usr/share/games/${pkgname}/${f}" || return 1
   done
 
   # Use DOS32/A instead of DOS4/GW
   ln -s "/usr/share/dos32a/dos32a.exe" "${pkgdir}/usr/share/games/${pkgname}/dos4gw.exe" || return 1
   
   # Tell where Tie Fighter is installed
-  install -D -m644 "$srcdir/tie.cd" "${pkgdir}/usr/share/games/${pkgname}/tie.cd" || return 1
+  install -D -m644 "${srcdir}/tie.cd" "${pkgdir}/usr/share/games/${pkgname}/tie.cd" || return 1
 
-  install -D -m755 "$srcdir/$pkgname.sh" "$pkgdir/usr/bin/$pkgname" || return 1
+  install -D -m755 "${srcdir}/$pkgname.sh" "${pkgdir}/usr/bin/${pkgname}" || return 1
 
   # Install .desktop file
-  install -D -m644 ${srcdir}/${pkgname}.desktop ${pkgdir}/usr/share/applications/${pkgname}.desktop || return 1
+  install -D -m644 "${srcdir}/${pkgname}.desktop" "${pkgdir}/usr/share/applications/${pkgname}.desktop" || return 1
 
   # Install icon
   install -d "${pkgdir}/usr/share/icons/"
