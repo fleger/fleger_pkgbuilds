@@ -14,7 +14,7 @@ source=("${pkgname}.sh"
         "http://www.softicons.com/download/tv-movie-icons/star-wars-icons-by-archigraphs/png/512/XWing_archigraphs.png"
         )
 md5sums=('3fa06d758e3a78b669333bada010b58f'
-         '4f23cc4f9b78bd616fce15a995ad1ade'
+         'fd4761378ec697a5591e0ecc85286918'
          'e90c27f0ec3ebfa4fafa725c4c793403')
 
 # Note: this PKGBUILD only works with the X-Wing Collector's CDROM edition of the game,

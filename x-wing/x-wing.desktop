@@ -10,6 +10,6 @@ Type=Application
 Terminal=false
 Icon=x-wing
 Exec=x-wing
-Categories=Game;Simulation;
+Categories=Application;Game;Simulation;
 
 
