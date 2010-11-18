@@ -2,7 +2,7 @@
 
 pkgname=x-wing
 pkgver=1.0
-pkgrel=1
+pkgrel=2
 pkgdesc="Space flight and combat simulator set in the Star Wars universe (uses DOSBox)"
 arch=("any")
 depends=("dosbox")
@@ -13,11 +13,14 @@ source=("${pkgname}.sh"
         "${pkgname}.desktop"
         "http://www.softicons.com/download/tv-movie-icons/star-wars-icons-by-archigraphs/png/512/XWing_archigraphs.png"
         )
-md5sums=('56617153b04f2c0d6ae228d85bb8ce46'
+md5sums=('23f8816742a38e80b1e564b2dae18d16'
          '4f23cc4f9b78bd616fce15a995ad1ade'
          'e90c27f0ec3ebfa4fafa725c4c793403')
 
-# Change this to the path where your X-Wing CD is mounted
+# Note: this PKGBUILD only works with the X-Wing Collector's CDROM edition of the game,
+# *not* with the Floppy Disks edition nor the X-Wing Collector Series edition.
+
+# Change this to the path where your X-Wing Collector's CDROM is mounted
 _cddir="$HOME/media/Star_Wars__X-Wing_Collector's_CDROM_(US).iso/"
 
 package() {
@@ -27,15 +30,15 @@ package() {
   local f
   for f in *.mdr *.wdr *.ovl bootdisk.exe bwing.exe detect.exe imuse.* install.exe *.fnt *.cfg *.plt read.me test* setmuse.* *.xid *.pac classic/* cp/* mission/* resource/* talk/**/*
   do
-    install -Dm644 "$f" "${pkgdir}/usr/share/games/${pkgname}/$f" || return 1
+    install -Dm644 "${f}" "${pkgdir}/usr/share/games/${pkgname}/${f}" || return 1
   done
 
-  install -D -m755 "$srcdir/$pkgname.sh" "$pkgdir/usr/bin/$pkgname" || return 1
+  install -D -m755 "${srcdir}/${pkgname}.sh" "${pkgdir}/usr/bin/${pkgname}" || return 1
 
   # Install .desktop file
-  install -D -m644 ${srcdir}/${pkgname}.desktop ${pkgdir}/usr/share/applications/${pkgname}.desktop || return 1
+  install -D -m644 "${srcdir}/${pkgname}.desktop" "${pkgdir}/usr/share/applications/${pkgname}.desktop" || return 1
 
   # Install icon
-  install -D -m644 ${srcdir}/XWing_archigraphs.png ${pkgdir}/usr/share/icons/${pkgname}.png || return 1
+  install -D -m644 "${srcdir}/XWing_archigraphs.png" "${pkgdir}/usr/share/icons/${pkgname}.png" || return 1
 }
 

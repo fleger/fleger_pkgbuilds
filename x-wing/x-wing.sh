@@ -1,9 +1,10 @@
-# /bin/bash
+#! /bin/bash
 
 shopt -s extglob
 
-sysdir="/usr/share/games/x-wing"
-usrdir="$HOME/.x-wing"
+game="x-wing"
+sysdir="/usr/share/games/$game"
+usrdir="$HOME/.$game"
 firstRun=false
 
 declare -A symlinks=([!(topace5.plt|setmuse.ini|landru.cfg|options.cfg)]="xwingcd")
@@ -24,7 +25,7 @@ done
 
 for f in "${!copies[@]}"; do
     mkdir -p "$usrdir/${copies[$f]}"
-    cp -ur $f "$usrdir/${copies[$f]}"   #2> /dev/null
+    cp -nr $f "$usrdir/${copies[$f]}"   #2> /dev/null
 done
 
 dosboxMainConfig="$(dosbox -printconf)"
