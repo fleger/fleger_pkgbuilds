@@ -51,7 +51,7 @@ package() {
 
   # Apply joystick patch
   cd "$srcdir"
-  unzip tiecdjoy.exe
+  unzip -o tiecdjoy.exe
   install -Dm644 z_tie__.exe "${pkgdir}/usr/share/games/${pkgname}/z_tie__.exe" || return 1
 }
 
