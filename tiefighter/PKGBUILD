@@ -14,7 +14,7 @@ source=("tie.cd"
         "${pkgname}.desktop"
         "ftp://ftp.lucasarts.com/patches/pc/tiecdjoy.exe")
 md5sums=('d7b3bef2b612a677079d3a866ed03725'
-         '13172270256c86ce6d92d0aaf5c6dc3f'
+         '90a7745806b2adf3b6d43bc816adc739'
          '86eeb7fd5afc56a62e651f548a647eec'
          '4153517873ca47afc92e12ed3005c826')
 

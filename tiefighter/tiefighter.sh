@@ -23,7 +23,7 @@ done
 
 for f in "${!copies[@]}"; do
     mkdir -p "$usrdir/${copies[$f]}"
-    cp -nr "$usrdir/${copies[$f]}" "$sysdir/"$f  2> /dev/null
+    cp -nr "$sysdir/"$f "$usrdir/${copies[$f]}"  2> /dev/null
 done
 
 dosboxMainConfig="$(dosbox -printconf)"
