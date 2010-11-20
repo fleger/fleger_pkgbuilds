@@ -1,21 +1,28 @@
 # /bin/bash
 
-sysdir="/usr/share/games/darkforces"
-usrdir="$HOME/.darkforces"
+shopt -s extglob
 
-symlinks=(bootmkr.exe dark.exe dos4gw.exe drive.cd imuse.exe install.exe readme.txt)
-copies=(imuse.ini jedi.cfg local.msg)
+game="darkforces"
+sysdir="/usr/share/games/$game"
+usrdir="$HOME/.$game"
+firstRun=false
+
+declare -A symlinks=([dark/?(bootmkr.exe|dark.exe|dos4gw.exe|drive.cd|imuse.exe|install.exe|readme.txt)]="")
+declare -A copies=([dark/?(imuse.ini|jedi.cfg|local.msg)]="")
 
 if [ ! -d "$usrdir" ]; then
     mkdir -p "$usrdir"
+    firstRun=true
 fi
 
-for f in "${symlinks[@]}"; do
-    cp -urs "$sysdir/dark/$f" "$usrdir" 2> /dev/null
+for f in "${!symlinks[@]}"; do
+    mkdir -p "$usrdir/${symlinks[$f]}"
+    cp -urs "$sysdir/"$f "$usrdir/${symlinks[$f]}" 2> /dev/null
 done
 
-for f in "${copies[@]}"; do
-    cp -ur "$sysdir/dark/$f" "$usrdir" 2> /dev/null
+for f in "${!copies[@]}"; do
+    mkdir -p "$usrdir/${copies[$f]}"
+    cp -nr "$sysdir/"$f "$usrdir/${copies[$f]}"   2> /dev/null
 done
 
 dosboxMainConfig="$(dosbox -printconf)"
@@ -34,16 +41,13 @@ c:
 cd \
 """
 
-if [ "$1" = "--setup" ]; then
+if [ "$1" = "--setup" ] || $firstRun; then
     batchScript+="""
 install.exe
 """
-elif [ ! -f "$usrdir/DARKPILO.CFG" ]; then
-    batchScript+="""
-install.exe
-dark.exe
-"""
-else
+fi
+
+if [ "$1" != "--setup" ]; then
     batchScript+="""
 dark.exe
 """
