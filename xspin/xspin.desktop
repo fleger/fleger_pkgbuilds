@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Name=Xspin
+GenericName=Spin graphical interface
+GenericName[fr]=Interface graphique à Spin
+Comment=Model checking tool
+Comment[fr]=Outil de vérification de modèle
+Exec=xspin
+Icon=xspin
+Type=Application
+Categories=Development;
