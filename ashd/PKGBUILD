@@ -1,7 +1,7 @@
 # Maintainer: Florian Léger <florian6.leger@laposte.net>
 pkgname=ashd
 pkgver=0.4
-pkgrel=1
+pkgrel=2
 pkgdesc="A Sane HTTP daemon."
 arch=(i686 x86_64)
 url="http://www.dolda2000.com/~fredrik/ashd/"
@@ -30,6 +30,7 @@ package() {
   install -Dm644 etc/ashd/dirplex.rc "$pkgdir/etc/ashd/dirplex.rc"
   install -Dm644 etc/ashd/apache-compat "$pkgdir/etc/ashd/apache-compat"
   install -d "$pkgdir/etc/ashd/dirplex.d"
+  install -m644 -t "$pkgdir/etc/ashd/dirplex.d" "etc/ashd/dirplex.d/"*.rc
  
   cd "$srcdir"
   install -Dm755 ashd "$pkgdir/etc/rc.d/ashd"
