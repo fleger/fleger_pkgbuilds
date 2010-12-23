@@ -1,0 +1,28 @@
+# Maintainer: Florian Léger <florian6 dot leger at laposte dot net>
+pkgname=arkanoid
+pkgver=1.0
+pkgrel=1
+pkgdesc="Breakout game (uses Dosbox)."
+arch=(any)
+url="http://en.wikipedia.org/wiki/Arkanoid"
+license=('custom')
+depends=(dosbox)
+source=("http://www.oldgames.sk/downloads/oldgames/logic/Arkanoid/${pkgname}.zip"
+        "${pkgname}.sh"
+        "${pkgname}.desktop"
+        "${pkgname}.png")
+md5sums=('e45759e2463ee9910ee4ac7663ba0bac'
+         '3b7c7ba0a95f434bb3d4154fd4450be7'
+         '362c73cdc1df7f7c5e7072bdb8953683'
+         '6acd300073e4a21f968ec5d90e0eacfe')
+
+package() {
+  cd "$srcdir"
+  install -Dm644 ARKANOID.COM "$pkgdir/usr/share/games/$pkgname/arkanoid.com"
+  install -Dm644 ARKANOID.PGM "$pkgdir/usr/share/games/$pkgname/arkanoid.pgm"
+  install -Dm644 ARKANOID.SCR "$pkgdir/usr/share/games/$pkgname/arkanoid.scr"
+
+  install -Dm644 ${pkgname}.desktop "$pkgdir/usr/share/applications/${pkgname}.desktop"
+  install -Dm755 ${pkgname}.sh "$pkgdir/usr/bin/${pkgname}"
+  install -Dm644 ${pkgname}.png "$pkgdir/usr/share/icons/${pkgname}.png"
+}
