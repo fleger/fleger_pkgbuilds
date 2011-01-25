@@ -2,8 +2,8 @@
 
 pkgname=python2-autoextension
 pkgver=1.0.0
-pkgrel=1
-pkgdesc="Python library to ease modulary application design."
+pkgrel=2
+pkgdesc="Python library to ease modular application design."
 arch=('any')
 url='http://florian.leger2.free.fr/downloads/softwares/pyAutoExtension/'
 license=('GPL')
@@ -12,9 +12,8 @@ makedepends=('python2-distribute')
 source=("http://florian.leger2.free.fr/downloads/softwares/pyAutoExtension/pyAutoExtension-${pkgver}.tar.bz2")
 md5sums=('17e254a38d7a563a496821377318155e')
 
-build() {
+package() {
   cd "${srcdir}/pyAutoExtension-${pkgver}"
-  find -type f -print0 | xargs -0 sed -i -e 's/#!\/usr\/bin\/env python/#!\/usr\/bin\/env python2/g'
   python2 setup.py install --root="${pkgdir}" --optimize=1 || return 1
 }
 
