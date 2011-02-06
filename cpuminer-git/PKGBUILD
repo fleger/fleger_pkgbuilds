@@ -1,7 +1,7 @@
 # Maintainer: Florian Léger <florian6 dot leger at laposte dot net>
 
 pkgname=cpuminer-git
-pkgver=20110204
+pkgver=20110206
 pkgrel=1
 pkgdesc="Multi-threaded CPU miner for bitcoin."
 arch=('i686' 'x86_64')
@@ -9,8 +9,13 @@ url="http://yyz.us/bitcoin/"
 license=('GPLv2')
 depends=('curl' 'jansson')
 makedepends=('git')
-
-_gitroot="https://github.com/jgarzik/cpuminer.git"
+source=(rc-script.cpuminer
+         cpuminer.conf)
+backup=(etc/conf.d/cpuminer.conf)
+md5sums=('15f42ecdfdd98b8dbd091e7c025716a8'
+         '22a8d17b37ab28fa31b925a570c55993')
+         
+_gitroot="http://github.com/jgarzik/cpuminer.git"
 _gitname="cpuminer"
 
 build() {
@@ -30,7 +35,9 @@ build() {
   rm -rf "$srcdir/$_gitname-build"
   git clone "$srcdir/$_gitname" "$srcdir/$_gitname-build"
   cd "$srcdir/$_gitname-build"
-  ./autogen.sh
+  ./autogen.sh || return 1
+  # Here you may want to use custom CFLAGS
+  # export CFLAGS="-03 -march=native -mtune=native -msse2"
   ./configure --prefix=/usr || return 1
   make || return 1
 }
@@ -38,5 +45,7 @@ build() {
 package() {
   cd "$srcdir/$_gitname-build"
   make DESTDIR="$pkgdir/" install || return 1
+  install -Dm644 "$srcdir/cpuminer.conf" "$pkgdir/etc/conf.d/cpuminer.conf" || return 1
+  install -Dm755 "$srcdir/rc-script.cpuminer" "$pkgdir/etc/rc.d/cpuminer" || return 1
 }
 
