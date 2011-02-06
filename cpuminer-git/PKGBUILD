@@ -12,9 +12,9 @@ makedepends=('git')
 source=(rc-script.cpuminer
          cpuminer.conf)
 backup=(etc/conf.d/cpuminer.conf)
-md5sums=('15f42ecdfdd98b8dbd091e7c025716a8'
-         '22a8d17b37ab28fa31b925a570c55993')
-         
+md5sums=('b88db7acaf6a275a3be30858ecf76b97'
+         'a5e357013eae8b231cad2ed2d4ca1ad3')
+          
 _gitroot="http://github.com/jgarzik/cpuminer.git"
 _gitname="cpuminer"
 
