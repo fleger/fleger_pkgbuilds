@@ -2,7 +2,7 @@
 
 pkgname=cpuminer-git
 pkgver=20110206
-pkgrel=1
+pkgrel=2
 pkgdesc="Multi-threaded CPU miner for bitcoin."
 arch=('i686' 'x86_64')
 url="http://yyz.us/bitcoin/"
@@ -10,11 +10,11 @@ license=('GPLv2')
 depends=('curl' 'jansson')
 makedepends=('git')
 source=(rc-script.cpuminer
-         cpuminer.conf)
+        cpuminer.conf)
 backup=(etc/conf.d/cpuminer.conf)
-md5sums=('b88db7acaf6a275a3be30858ecf76b97'
+md5sums=('a014ba1a7ea4240c585be90822db9315'
          'a5e357013eae8b231cad2ed2d4ca1ad3')
-          
+
 _gitroot="http://github.com/jgarzik/cpuminer.git"
 _gitname="cpuminer"
 
@@ -37,7 +37,7 @@ build() {
   cd "$srcdir/$_gitname-build"
   ./autogen.sh || return 1
   # Here you may want to use custom CFLAGS
-  # export CFLAGS="-03 -march=native -mtune=native -msse2"
+  #export CFLAGS="-O2 -march=native -mtune=native -msse2"
   ./configure --prefix=/usr || return 1
   make || return 1
 }
