@@ -1,7 +1,7 @@
 # Maintainer: Florian Léger <florian6 dot leger at laposte dot net>
 pkgname=arkanoid
 pkgver=1.0
-pkgrel=1
+pkgrel=2
 pkgdesc="Breakout game (uses Dosbox)."
 arch=(any)
 url="http://en.wikipedia.org/wiki/Arkanoid"
@@ -12,7 +12,7 @@ source=("http://www.oldgames.sk/downloads/oldgames/logic/Arkanoid/${pkgname}.zip
         "${pkgname}.desktop"
         "${pkgname}.png")
 md5sums=('e45759e2463ee9910ee4ac7663ba0bac'
-         '3b7c7ba0a95f434bb3d4154fd4450be7'
+         'ae8acf91cb9bffcf714f235c891b25f6'
          '362c73cdc1df7f7c5e7072bdb8953683'
          '6acd300073e4a21f968ec5d90e0eacfe')
 
