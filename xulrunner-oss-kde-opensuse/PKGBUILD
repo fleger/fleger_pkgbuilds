@@ -4,7 +4,7 @@ pkgname=xulrunner-oss-kde-opensuse
 pkgver=1.9.2.13
 _ffoxver=3.6.13
 pkgrel=1
-pkgdesc="Mozilla Runtime Environment comiled with OSS support and with OpenSUSE patch, integrates better with KDE"
+pkgdesc="Mozilla Runtime Environment compiled with OSS support and with OpenSUSE patch, integrates better with KDE"
 arch=('i686' 'x86_64')
 license=('MPL' 'GPL' 'LGPL')
 depends=('gtk2' 'gcc-libs' 'libidl2' 'mozilla-common' 'nss' 'libxt' 'hunspell' 'startup-notification' 'mime-types' 'dbus-glib' 'alsa-lib' 'libevent' 'sqlite3>=3.7.4' 'kmozillahelper>=0.6' 'libproxy')
