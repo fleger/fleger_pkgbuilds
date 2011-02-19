@@ -1,0 +1,20 @@
+# Maintainer: Florian Léger <florian6 dot leger at laposte dot net>
+pkgname=pokedex-pokebip
+pkgver=2.0.3
+pkgrel=1
+pkgdesc="A french offline Pokedex."
+arch=(any)
+depends=("xdg-utils")
+url="http://www.pokebip.com/pokemon/page__pokedex-offline.html"
+license=('custom')
+source=("http://www.pokebip.com/pokemon/download/pokedex_offline_${pkgver}_avec_images.zip"
+        "${pkgname}.desktop")
+md5sums=('bbb79cd3f19cfb61045b3ee95fe3467b'
+         '358f38b027f572c9f313faf6eba29723')
+
+package() {
+    install -d "${pkgdir}/usr/share/${pkgname}/"
+    cp -r "${srcdir}/Pok"?"dex Offline ${pkgver} avec images/"* "${pkgdir}/usr/share/${pkgname}/"
+    install -Dm644 "${srcdir}/Pok"?"dex Offline ${pkgver} avec images/skins/offline/images/h2.png" "${pkgdir}/usr/share/icons/${pkgname}.png"
+    install -Dm644 "${srcdir}/${pkgname}.desktop" "${pkgdir}/usr/share/applications/${pkgname}.desktop"
+}

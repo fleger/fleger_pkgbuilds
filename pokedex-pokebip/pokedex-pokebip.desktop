@@ -1,0 +1,14 @@
+[Desktop Entry]
+Name=Pokedex PokéBip
+Name[fr]=Pokédex PokéBip
+GenericName=Offline Pokedex
+GenericName[fr]=Pokédex hors-ligne
+Encoding=UTF-8
+Version=1.0
+Type=Application
+Terminal=false
+Icon=pokedex-pokebip
+Exec=xdg-open file:///usr/share/pokedex-pokebip/index.html
+Categories=Game;
+
+
