@@ -1,0 +1,44 @@
+#Maintainer: Florian Léger <florian6 dot leger at laposte dot net>
+pkgname=farcaster-storage-git
+pkgver=20110219
+pkgrel=1
+pkgdesc="Farcaster network storage configuration files"
+arch=(any)
+url="http://github.com/fleger/farcaster"
+license=('custom:WTFPL')
+groups=(farcaster)
+depends=(udev update-fstab)
+makedepends=('git')
+provides=(fleger-data)
+conflicts=(fleger-data)
+replaces=(fleger-data)
+options=(emptydirs)
+install="$pkgname.install"
+
+_gitroot="http://github.com/fleger/farcaster.git"
+_gitname="farcaster-storage"
+
+build() {
+  cd "$srcdir"
+  msg "Connecting to GIT server...."
+
+  if [ -d $_gitname ] ; then
+    cd $_gitname && git pull origin
+    msg "The local files are updated."
+  else
+    git clone $_gitroot $_gitname
+  fi
+
+  msg "GIT checkout done or server timeout"
+  msg "Starting make..."
+
+  rm -rf "$srcdir/$_gitname-build"
+  git clone "$srcdir/$_gitname" "$srcdir/$_gitname-build"
+  cd "$srcdir/$_gitname-build"
+}
+
+package() {
+  cd "$srcdir/$_gitname-build"
+  install -Dm644 COPYING "$pkgdir/usr/share/licenses/$pkgname/COPYING"
+  DESTDIR="$pkgdir/" ./storage/install.sh || return 1
+} 
