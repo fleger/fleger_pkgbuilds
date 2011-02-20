@@ -1,0 +1,38 @@
+#Maintainer: Florian Léger <florian6 dot leger at laposte dot net>
+pkgname=farcaster-machines-git
+pkgver=20110220
+pkgrel=1
+pkgdesc="Farcaster network machines configuration files"
+arch=(any)
+url="http://github.com/fleger/farcaster"
+license=('custom:WTFPL')
+groups=(farcaster)
+makedepends=('git')
+
+_gitroot="http://github.com/fleger/farcaster.git"
+_gitname="farcaster-machines"
+
+build() {
+  cd "$srcdir"
+  msg "Connecting to GIT server...."
+
+  if [ -d $_gitname ] ; then
+    cd $_gitname && git pull origin
+    msg "The local files are updated."
+  else
+    git clone $_gitroot $_gitname
+  fi
+
+  msg "GIT checkout done or server timeout"
+  msg "Starting make..."
+
+  rm -rf "$srcdir/$_gitname-build"
+  git clone "$srcdir/$_gitname" "$srcdir/$_gitname-build"
+  cd "$srcdir/$_gitname-build"
+}
+
+package() {
+  cd "$srcdir/$_gitname-build"
+  install -Dm644 COPYING "$pkgdir/usr/share/licenses/$pkgname/COPYING"
+  install -Dm644 machines/machines.conf "$pkgdir/etc/farcaster/machines.conf" || return 1
+} 
