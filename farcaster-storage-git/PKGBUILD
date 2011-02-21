@@ -1,6 +1,6 @@
 #Maintainer: Florian Léger <florian6 dot leger at laposte dot net>
 pkgname=farcaster-storage-git
-pkgver=20110219
+pkgver=20110221
 pkgrel=1
 pkgdesc="Farcaster network storage configuration files"
 arch=(any)
