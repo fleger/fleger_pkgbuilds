@@ -1,0 +1,32 @@
+# Maintainer: Florian Léger <florian6 dot leger at laposte dot net>
+
+pkgname=nwnmod-original-l10n-fr
+pkgver=1.69
+pkgrel=1
+pkgdesc="French languagepack for the original Neverwinter Nights campaign"
+arch=("any")
+license=("custom")
+depends=("nwnmod-original-resources=$pkgver")
+url="http://nwn.bioware.com/downloads/linuxclient.html"
+provides=("nwnmod-original-l10n")
+conflics=("nwnmod-original-l10n")
+source=("http://files.bioware.com/neverwinternights/updates/linux/nwfrench129.tar.gz"
+        "NWN169FR.zip::http://nwvault.ign.com/fms/Download.php?id=134731"
+        "89-original-l10n.conf")
+md5sums=('d1e72a42a20c247332de6c6adcbcade5'
+         'ab84b186938ca5c866e651341d0f9b48'
+         '37ba8936883f20c94b4d3291824472c7')
+                  
+
+package() {
+  cd "$srcdir"
+  install -D -m644 dialog.tlk "${pkgdir}/opt/nwnmod-original-l10n/dialog.tlk" || return 1
+  install -D -m644 dialogf.tlk "${pkgdir}/opt/nwnmod-original-l10n/dialogf.tlk" || return 1
+  install -D -m644 chitin.key "${pkgdir}/opt/nwnmod-original-l10n/chitin.key" || return 1
+  install -D -m644 data/voicesets.bif "${pkgdir}/opt/nwnmod-original-l10n/data/voicesets.bif" || return 1
+  install -D -m644 data/convo.bif "${pkgdir}/opt/nwnmod-original-l10n/data/convo.bif" || return 1
+  install -D -m644 data/fr_voicesets.bif "${pkgdir}/opt/nwnmod-original-l10n/data/fr_voicesets.bif" || return 1
+  install -D -m644 data/fr_convo.bif "${pkgdir}/opt/nwnmod-original-l10n/data/fr_convo.bif" || return 1
+  install -D -m644 89-original-l10n.conf "${pkgdir}/etc/nwnmod.d/89-original-l10n.conf" || return 1
+}
+
