@@ -1,0 +1,106 @@
+# Maintainer: Florian Léger <florian6 dot leger at laposte dot net>
+
+pkgbase=nwnmod-client-original-resources
+pkgname=('nwnmod-original-resources' 'nwnmod-client' 'bin32-nwnmod-client')
+pkgver=1.69
+pkgrel=1
+arch=(i686 x86_64)
+license=("custom")
+url="http://nwn.bioware.com/downloads/linuxclient.html"
+source=("http://files.bioware.com/neverwinternights/updates/linux/nwresources129.tar.gz"
+        "http://files.bioware.com/neverwinternights/updates/linux/nwclient129.tar.gz"
+        "http://files.bioware.com/neverwinternights/updates/linux/${pkgver//.}/English_linuxclient${pkgver//.}_orig.tar.gz"
+        "99-original-resources.conf"
+        "70-client.conf"
+)
+noextract=("nwclient129.tar.gz" "English_linuxclient${pkgver//.}_orig.tar.gz")
+md5sums=('8222401efe25235b56d01b38ae880b5b'
+         '73c6515fd6aa5f860802098a55000ae8'
+         '1a8ea3a8bc03c1b33e1207e574f95023'
+         '3af5f171747394d3406a99fc5a163fc6'
+         'a23ddb4862f495821733d999cecf0a89')
+
+# Package options
+# Set to true to use the Bioware-provided SDL
+_useBuiltinSDL=false
+
+build() {
+  local i
+
+  cd "$srcdir"
+  install -d nwn
+  
+  # Extract the client and the update in the proper directory
+  for i in "${noextract[@]}"; do
+    bsdtar -x -C nwn -f "$i"
+  done
+
+  # Remove provided SDL
+  if ! $_useBuiltinSDL; then
+    rm nwn/lib/*
+  fi
+  
+  # Roughly fix permissions
+  cd nwn
+  find . -type d -exec chmod 755 '{}' \;
+  find . -type f -exec chmod 644 '{}' \;
+}
+
+package_nwnmod-original-resources() {
+  pkgdesc="Neverwinter Nights original game resources for NWNMod"
+  depends=(nwnmod-git)
+  arch=(any)
+  options=(!strip)
+
+  cd "$srcdir/nwn"
+  local i
+  install -d "$pkgdir/opt/nwnmod-original-resources"
+  install -Dm644 EULA.txt "$pkgdir/usr/share/licenses/nwn/EULA.txt"
+  for i in dialog.tlk chitin.key patch.key xp3.key  \
+           data dmvault docs hak localvault modules \
+           music nwm override portraits saves       \
+           servervault texturepacks ambient; do
+    cp -r "$i" "$pkgdir/opt/nwnmod-original-resources"
+  done
+  install -Dm644 "$srcdir/99-original-resources.conf" "$pkgdir/etc/nwnmod.d/99-original-resources.conf"
+}
+
+_nwnmod-client() {
+  cd "$srcdir/nwn"
+  local i
+  install -d "$pkgdir/opt/nwnmod-client"
+  for i in dmclient nwmain nwn nwserver; do
+    install -Dm755 "$i" "$pkgdir/opt/nwnmod-client/$i"
+  done
+  for i in lib nwn.ini miles readme*; do
+    cp -r "$i" "$pkgdir/opt/nwnmod-client"
+  done
+  install -Dm644 "$srcdir/70-client.conf" "$pkgdir/etc/nwnmod.d/70-client.conf"
+}
+
+package_nwnmod-client() {
+  pkgdesc="Neverwinter Nights game client for NWNMod"
+  depends=(nwnmod-git nwnmod-original-resources=$pkgver mesa)
+  $_useBuiltinSDL || depends+=(sdl)
+  optdepends=("intel-dri: 3D acceleration for Intel chipsets"
+              "nvidia-utils: 3D acceleration for NVIDIA cards"
+              "catalyst-utils: 3D acceleration for AMD cards")
+  arch=(i686)
+  options=(emptydirs)
+
+  _nwnmod-client
+}
+
+package_bin32-nwnmod-client() {
+  pkgdesc="Neverwinter Nights game client for NWNMod"
+  depends=(nwnmod-git nwnmod-original-resources=$pkgver lib32-mesa)
+  $_useBuiltinSDL || depends+=(lib32-sdl)
+  optdepends=("lib32-intel-dri: 3D acceleration for Intel chipsets"
+              "lib32-nvidia-utils: 3D acceleration for NVIDIA cards"
+              "lib32-catalyst-utils: 3D acceleration for AMD cards")
+  arch=(x86_64)
+  options=(emptydirs)
+  provides=(nwnmod-client=$pkgver)
+
+  _nwnmod-client
+}
