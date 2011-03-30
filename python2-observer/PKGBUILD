@@ -1,38 +1,19 @@
 # Maintainer: Florian Léger <florian6 dot leger at laposte dot fr>
 
 pkgname=python2-observer
-true && pkgname=(python2-observer python-observer)
 pkgver=1.0.1
-pkgrel=2
+pkgrel=1
 pkgdesc="Python library that provides a Java-like implementation of the Observer pattern."
 arch=('any')
 url='http://florian.leger2.free.fr/downloads/softwares/pyObserver/'
 license=('GPL')
-makedepends=('python-distribute' 'python2-distribute')
+depends=('python2')
+makedepends=('python2-distribute')
 source=("http://florian.leger2.free.fr/downloads/softwares/pyObserver/pyObserver-${pkgver}.tar.bz2")
 md5sums=('3f85abb4c1e08c704dca03285fb03424')
 
-build() {
-  cd "$srcdir"
-  rm -rf python{,2}-build
-  local builddir
-  for builddir in python{,2}-build; do
-    cp -r "pyObserver-$pkgver" $builddir
-    pushd $builddir
-    ${builddir%-build} setup.py build
-    popd
-  done
-}
-
-package_python-observer() {
-  depends=(python)
-  cd "${srcdir}/python-build"
-  python setup.py install --root="${pkgdir}" --optimize=1 || return 1
-}
-
-package_python2-observer() {
-  depends=(python2)
-  cd "${srcdir}/python2-build"
+package() {
+  cd "${srcdir}/pyObserver-${pkgver}"
   python2 setup.py install --root="${pkgdir}" --optimize=1 || return 1
 }
 
