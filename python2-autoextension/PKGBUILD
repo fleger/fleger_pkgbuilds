@@ -1,7 +1,7 @@
 # Maintainer: Florian Léger <florian6 dot leger at laposte dot fr>
 
 pkgname=python2-autoextension
-pkgver=1.1.0
+pkgver=1.1.1
 pkgrel=1
 pkgdesc="Python library to ease modular application design."
 arch=('any')
@@ -10,7 +10,7 @@ license=('GPL')
 depends=('python2')
 makedepends=('python2-distribute')
 source=("http://florian.leger2.free.fr/downloads/softwares/pyAutoExtension/pyAutoExtension-${pkgver}.tar.bz2")
-md5sums=('a7500f1fc0f66cde3f286750e3d58127')
+md5sums=('4487d49e52affa818a8db9d769c33e9d')
 
 package() {
   cd "${srcdir}/pyAutoExtension-${pkgver}"
