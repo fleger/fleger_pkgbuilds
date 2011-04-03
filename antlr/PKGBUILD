@@ -1,0 +1,35 @@
+# Contributor: Mathieu Clabaut <mathieu.clabaut@gmail.com>
+# Contributor: Artyom Smirnov <smirnoffjr@gmail.com>
+# Contributor: Alexis Robert <alexis.robert@gmail.com>
+# Okay fellow: Brian L. Troutwine <brian@troutwine.us>
+# Contributor: Florian Léger <florian6 dot leger at laposte dot net>
+
+pkgname=antlr
+pkgver=3.3
+pkgrel=1
+pkgdesc="ANother Tool for Language Recognition, (formerly PCCTS) is a language tool that provides a framework for constructing recognizers, compilers, and translators from grammatical descriptions containing C++, Java, C or python actions"
+url="http://www.antlr.org/"
+arch=("any")
+license=("BSD")
+depends=('java-runtime')
+source=(http://www.antlr.org/download/${pkgname}-${pkgver}-complete.jar LICENSE.txt)
+md5sums=('238becce7da69f7be5c5b8a65558cf63'
+         '50cdd42e463eef143d5fa628e78c8ffe')
+
+package() {
+  install -Dm644 ${srcdir}/${pkgname}-${pkgver}-complete.jar "${pkgdir}/usr/share/java/${pkgname}/${pkgname}-${pkgver}-complete.jar" || return 1
+  install -d "${pkgdir}/etc/profile.d"
+  install -d "${pkgdir}/usr/bin"
+  cat > "${pkgdir}/etc/profile.d/${pkgname}.sh" << EOF
+export CLASSPATH="\$CLASSPATH:/usr/share/java/${pkgname}/${pkgname}-${pkgver}-complete.jar"
+EOF
+
+  install -Dm644 ${srcdir}/LICENSE.txt "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE.txt" || return 1
+
+  cat > "${pkgdir}/usr/bin/${pkgname}" << EOF
+#! /bin/sh
+exec java -jar "/usr/share/java/${pkgname}/${pkgname}-${pkgver}-complete.jar" "\$@"
+EOF
+  chmod 755 "${pkgdir}/usr/bin/${pkgname}"
+}
+
