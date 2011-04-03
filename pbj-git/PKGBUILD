@@ -1,0 +1,45 @@
+# Maintainer: Florian Léger <florian6 dot leger at laposte dot net>
+
+pkgname=pbj-git
+pkgver=20110403
+pkgrel=1
+pkgdesc="Abstract data type system with multiple serialization backends."
+arch=('i686' 'x86_64')
+url="https://github.com/sirikata/pbj"
+license=('BSD')
+depends=('libantlr3c')
+makedepends=('git' 'antlr')
+source=(COPYING)
+md5sums=('e446eb0b12760e5c505c39dcb35d930c')
+
+_gitroot="https://github.com/sirikata/pbj.git"
+_gitname="pbj"
+
+build() {
+  cd "$srcdir"
+  msg "Connecting to GIT server...."
+
+  if [ -d $_gitname ] ; then
+    cd $_gitname && git pull origin
+    msg "The local files are updated."
+  else
+    git clone $_gitroot $_gitname
+  fi
+
+  msg "GIT checkout done or server timeout"
+  msg "Starting make..."
+
+  rm -rf "$srcdir/$_gitname-build"
+  git clone "$srcdir/$_gitname" "$srcdir/$_gitname-build"
+  cd "$srcdir/$_gitname-build"
+  # Use system antlr
+  sed -e 's/java .*org.antlr.Tool/antlr/g' -i Makefile
+  make pbj || return 1
+}
+
+package() {
+  cd "$srcdir/$_gitname-build"
+  install -Dm755 "pbj" "$pkgdir/usr/bin/pbj" || return 1
+  install -Dm644 "$srcdir/COPYING" "$pkgdir/usr/share/licenses/$pkgname/COPYING" || return 1
+}
+
