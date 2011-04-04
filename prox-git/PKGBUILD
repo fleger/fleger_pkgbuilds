@@ -3,7 +3,7 @@
 pkgname=prox-git
 pkgver=20110404
 pkgrel=1
-pkgdesc="Abstract data type system with multiple serialization backends."
+pkgdesc="Prototype proximity system for sirikata"
 arch=('i686' 'x86_64')
 url="https://github.com/sirikata/prox"
 license=('BSD')
