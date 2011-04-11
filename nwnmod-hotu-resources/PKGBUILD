@@ -1,0 +1,34 @@
+# Maintainer: Florian Léger <florian6 dot leger at laposte dot net>
+
+pkgname=nwnmod-hotu-resources
+pkgdesc="Hordes Of The Underdark Neverwinter Nights expansion resources."
+pkgver=1.69
+pkgrel=1
+arch=(any)
+depends=("nwnmod-original-resources=$pkgver")
+license=("custom")
+url="http://nwn.bioware.com/downloads/linuxclient.html"
+source=("http://files.bioware.com/neverwinternights/updates/linux/${pkgver//.}/English_linuxclient${pkgver//.}_xp2.tar.gz"
+        "97-hotu-resources.conf")
+md5sums=('b021f0da3b3e00848521926716fdf487'
+         '7c0c26be8bdd753bfc7d94f451af3283')
+
+# Package options
+# Path to the HOTU cdrom mountpoint
+_cddir="/media/_cdrom"
+
+package() {
+  cd "$srcdir"
+  install -Dm644 "97-hotu-resources.conf" "${pkgdir}/etc/nwnmod.d/97-hotu-resources.conf"
+  install -d "${pkgdir}/opt/$pkgname"
+  # Data_Shared.zip
+  unzip "$_cddir/Data_Shared.zip" 'ambient/*' 'data/*' 'localvault/*' 'music/*' 'texturepacks/*' -d "${pkgdir}/opt/$pkgname"
+  # Language_Data.zip
+  unzip "$_cddir/Language_Data.zip" -x xp2patch.key data/xp2patch.bif  -d "${pkgdir}/opt/$pkgname"
+  mv "$pkgdir/opt/$pkgname/NWNHordes_Manual.pdf" "$pkgdir/opt/$pkgname/docs"
+  # Patch
+  local f
+  for f in xp2patch.key data/xp2patch.bif nwm/XP2*.nwm texturepacks/*; do
+    install -Dm644 "$f" "${pkgdir}/opt/$pkgname/$f"
+  done
+}
