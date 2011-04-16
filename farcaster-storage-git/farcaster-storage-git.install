@@ -1,17 +1,18 @@
 ## arg 1:  the new package version
 post_install() {
-  update-fstab
-  udevadm control --reload-rules
+  post_upgrade
+  echo ">>> You might want to chown some directories in /mnt."
 }
 
 ## arg 1:  the new package version
 ## arg 2:  the old package version
 post_upgrade() {
-  post_install "$1"
+  update-fstab
+  udevadm control --reload-rules
 }
 
 post_remove() {
-  post_install "$1"
+  post_upgrade
 }
 
 # vim:set ts=2 sw=2 et:

@@ -1,6 +1,6 @@
 #Maintainer: Florian Léger <florian6 dot leger at laposte dot net>
 pkgname=farcaster-storage-git
-pkgver=20110221
+pkgver=20110416
 pkgrel=1
 pkgdesc="Farcaster network storage configuration files"
 arch=(any)
@@ -40,5 +40,5 @@ build() {
 package() {
   cd "$srcdir/$_gitname-build"
   install -Dm644 COPYING "$pkgdir/usr/share/licenses/$pkgname/COPYING"
-  DESTDIR="$pkgdir/" ./storage/install.sh || return 1
+  DESTDIR="$pkgdir/" CONFDIR="/etc/farcaster" ./storage/install.sh || return 1
 } 
