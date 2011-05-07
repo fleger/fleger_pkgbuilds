@@ -13,7 +13,6 @@ depends=(gnutls file)
 md5sums=('f9e437bdbf87333166fe9aa20414430f'
          '5611d757b7d4695e721f5cc3600d39b1'
          '2ee675c226fa5396bb65fad1b0035e50')
-                  
 backup=(etc/conf.d/ashd.conf etc/ashd/dirplex.rc etc/ashd/apache-compat)
 install=ashd.install
 
