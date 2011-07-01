@@ -1,0 +1,61 @@
+# Maintainer: Florian Léger <florian6 dot leger at laposte dot net>
+
+pkgname=swkotor
+pkgdesc="RPG set in the Star Wars universe (uses Wine)"
+pkgver=1.03
+pkgrel=1
+arch=(i686 x86_64)
+license=("custom")
+url="http://www.bioware.com/games/knights_old_republic/"
+source=("swkotor.desktop" "swkotor.sh" "01-user.conf" "99-original-resources.conf")
+depends=("modfs-git" "wine")
+makedepends=("icoutils" "findutils" "convmv")
+md5sums=('ae18ec295eb33a66d9e6f40cc949873b'
+         '957807ce813515e3fb120110bc4462c8'
+         '20b27fc92c8d98c625706af8899be3d7'
+         '54e62ce255dbdaac66969c2b18e9aa99')
+options=(!strip)
+
+# Package options
+# Until I find a way to programmaticaly extract the content of the 1.03 patch,
+# you will need to supply the path to an already installed and patched KotOR.
+_kotorPath="$HOME/.wine/drive_c/Program Files/LucasArts/SWKotOR"
+
+build() {
+  cd "$srcdir"
+  find "$_kotorPath" -maxdepth 1 -iname "swkotor.exe" -exec wrestool -x -t group_icon '{}'  > "swkotor.ico" \;
+  icotool -x -i 2 swkotor.ico
+}
+
+package() {
+  install -d "$pkgdir/opt/swkotor"
+
+  # Copy original resources (case-insensitive)
+  cd "$_kotorPath"
+  local i
+  for i in data docs lips logs miles modules movies override rims saves streammusic streamsounds streamwaves texturepacks \
+           binkw32.dll chitin.key dialog.tlk patch.erf patchw32.dll swkotor.exe swkotor.ini; do
+    find . -maxdepth 1 -iname "$i" -exec cp -r '{}' "$pkgdir/opt/swkotor" \;
+  done
+
+  find . -maxdepth 1 -iname "swkotorv103.txt" -exec install -Dm644 '{}' "$pkgdir/opt/swkotor/docs/swkotorv103.txt" \;
+  cd "$pkgdir/opt/swkotor"
+  
+  # Fix case
+  convmv --lower --notest -r *
+  
+  ln -s miles/mss32.dll
+  
+  # Fix permissions
+  find . -type d -exec chmod 755 '{}' \;
+  find . -type f -exec chmod 644 '{}' \;
+  
+  install -d "$pkgdir/usr/share/licenses/swkotor"
+  ln -s "/opt/swkotor/docs/eula.txt" "$pkgdir/usr/share/licenses/swkotor/eula.txt"
+  
+  install -Dm644 "$srcdir/01-user.conf" "$pkgdir/etc/swkotor.d/01-user.conf"
+  install -Dm644 "$srcdir/99-original-resources.conf" "$pkgdir/etc/swkotor.d/99-original-resources.conf"
+  install -Dm644 "$srcdir/swkotor.desktop" "$pkgdir/usr/share/applications/swkotor.desktop"
+  install -Dm644 "$srcdir/swkotor_2_48x48x8.png" "$pkgdir/usr/share/pixmaps/swkotor.png"
+  install -Dm755 "$srcdir/swkotor.sh" "$pkgdir/usr/bin/swkotor"
+}

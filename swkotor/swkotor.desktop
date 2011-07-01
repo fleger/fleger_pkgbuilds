@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Star Wars Knights of the Old Republic
+GenericName=RPG
+GenericName[fr]=JDR
+Encoding=UTF-8
+Version=1.0
+Type=Application
+Terminal=false
+Icon=swkotor
+Exec=swkotor
+Categories=Game;RolePlaying;
