@@ -1,5 +1,5 @@
-KERNEL_NAME=
-KERNEL_VERSION=2.6.39-dreamplug
+KERNEL_NAME=-dreamplug
+KERNEL_VERSION=2.6.39
 
 post_install() {
   # ARM doesn't use mkinitcpio or anything like that
@@ -7,7 +7,7 @@ post_install() {
   echo -e "\033[1mNotice\033[0m"
   echo "This package is built specifically for DreamPlugs."
   echo "It may or may not work on other ARMv5te plug computers."
-  /sbin/depmod ${KERNEL_VERSION}
+  /sbin/depmod ${KERNEL_VERSION}${KERNEL_NAME}
 }
 
 post_upgrade() {
