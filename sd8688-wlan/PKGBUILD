@@ -7,9 +7,9 @@ pkgdesc="WLAN driver for Marvell SD8688 WiFi/BlueTooth chipset."
 arch=('i686' 'x86_64' 'arm')
 url='http://plugcomputer.org/plugwiki/index.php/Setting_GuruPlug_to_be_a_stable_WiFi_Client'
 license=('GPL')
-depends=('kernel26')
+depends=('kernel26' 'sd8688-firmware')
 makedepends=('kernel26-headers' 'gzip')
-install='sd8688.install'
+install='sd8688-wlan.install'
 source=("http://plugcomputer.org/plugwiki/images/0/05/SD_WLAN.tar.gz"
         "sd_wlan.diff")
 md5sums=('2f279f30bee27ca52118b931b39a922b'
@@ -39,9 +39,4 @@ package() {
 
   install -Dm644 sd8xxx.ko.gz "$pkgdir/lib/modules/$KERNEL_RELEASE/kernel/drivers/net/wireless/sd8688/sd8xxx.ko.gz"
   install -Dm644 mcypt.ko.gz "$pkgdir/lib/modules/$KERNEL_RELEASE/kernel/drivers/net/wireless/sd8688/mcypt.ko.gz"
-
-  cd "$srcdir/SD_WLAN/FwImage"
-
-  install -Dm644 sd8688.bin "$pkgdir/lib/firmware/mrvl/sd8688.bin"
-  install -Dm644 helper_sd.bin "$pkgdir/lib/firmware/mrvl/helper_sd.bin"
 }
