@@ -1,0 +1,25 @@
+post_install() {
+  cat << EOM
+To make your SD8688 chipset work in WiFi client mode, add the following lines
+in your /etc/modprobe.d/modprobe.conf:
+
+blacklist libertas_sdio
+blacklist libertas
+blacklist btmrvl_sdio
+blacklist btmrvl
+blacklist bluetooth
+blacklist uap8xxx
+
+Make sure sd8xxx and mcypt are not blacklisted.
+You may also need to reboot your computer.
+EOM
+  post_upgrade
+}
+
+post_upgrade() {
+  depmod -a
+}
+
+post_remove() {
+  post_upgrade
+}
