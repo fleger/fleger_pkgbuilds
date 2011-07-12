@@ -7,12 +7,12 @@ pkgbase="kernel26-dreamplug"
 pkgname=('kernel26-dreamplug' 'kernel26-dreamplug-headers')
 _kernelname=${pkgname#kernel26}
 _basekernel=2.6.39
-pkgver=${_basekernel}.2
+pkgver=${_basekernel}.3
 _pkgrel=1
 pkgrel=${_pkgrel}
-makedepends=('xmlto' 'docbook-xsl' 'uboot-mkimage' 'make')
+makedepends=('xmlto' 'docbook-xsl' 'uboot-mkimage')
 _patchname="patch-${pkgver}-${_pkgrel}-ARCH"
-_alahash="00caece6961d62500af3f5417fbcf61cd2349d85"
+_alarmcommit="40010f760a379047b64077fd4bac5edc7df07178"
 provides=('kernel26')
 arch=(arm)
 CARCH=arm
@@ -22,14 +22,14 @@ license=('GPL2')
 url="http://www.kernel.org"
 source=(ftp://ftp.kernel.org/pub/linux/kernel/v2.6/linux-$_basekernel.tar.bz2
         ftp://ftp.archlinux.org/other/kernel26/${_patchname}.bz2
-        https://github.com/archlinuxarm/PKGBUILDs/raw/$_alahash/core/kernel26/$_basekernel.config
-        https://github.com/archlinuxarm/PKGBUILDs/raw/$_alahash/core/kernel26/archlinuxarm.patch
+        https://github.com/archlinuxarm/PKGBUILDs/raw/$_alarmcommit/core/kernel26/$_basekernel.config
+        https://github.com/archlinuxarm/PKGBUILDs/raw/$_alarmcommit/core/kernel26/archlinuxarm.patch
         http://sheeva.with-linux.com/sheeva/$_basekernel/$pkgver/source/0002-Driver-for-Marvell-Libertas-8688-SDIO-micro-AP-suppo-2.6.39.patch
         http://sheeva.with-linux.com/sheeva/$_basekernel/$pkgver/source/mvsdio-1-2.6.30.patch
         http://sheeva.with-linux.com/sheeva/$_basekernel/$pkgver/source/mvsdio-2.patch)
 md5sums=('1aab7a741abe08d42e8eccf20de61e05'
-         '3f03a326cf11b0e3d171dc0aa33652f7'
-         '20d5df824c6462bfaf40cda6009430e5'
+         'b23d7def30e57242cfe088f4d8ca8baa'
+         '345e89be67109f26eec8183ed8858386'
          '77e8e011485c2061616214d07356132e'
          '915a9380e205d4ca8c179c745831c3e0'
          'e655da31381a7ca7347e610912d9c610'
@@ -115,6 +115,7 @@ package_kernel26-dreamplug() {
   # gzip -9 all modules to save 100MB of space
   find "$pkgdir" -name '*.ko' -exec gzip -9 {} \;
 }
+
 
 package_kernel26-dreamplug-headers() {
   pkgdesc="Header files and scripts for building modules for kernel26-dreamplug"
