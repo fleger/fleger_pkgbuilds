@@ -1,5 +1,5 @@
-KERNEL_NAME=
-KERNEL_VERSION=
+KERNEL_NAME=-dreamplug
+KERNEL_VERSION=2.6.39-dreamplug
 
 post_install() {
   # ARM doesn't use mkinitcpio or anything like that
@@ -11,7 +11,7 @@ post_install() {
 }
 
 post_upgrade() {
-  /sbin/depmod ${KERNEL_VERSION}${KERNEL_NAME}
+  /sbin/depmod ${KERNEL_VERSION}
 }
 
 op=$1
