@@ -1,0 +1,6 @@
+# Interface
+UAPUTL_INTERFACE="uap0"
+
+# Path to the uaputl configuration file
+UAPUTL_CONF="/etc/uaputl/uaputl.conf"
+
