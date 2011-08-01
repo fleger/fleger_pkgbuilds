@@ -1,0 +1,38 @@
+# Maintainer: Florian Léger <florian6 dot leger at laposte dot net>
+
+pkgname=uaputl
+pkgver=1.12
+pkgrel=1
+pkgdesc="Tool to configure Marvell Micro AP."
+arch=('i686' 'x86_64' 'arm')
+url='http://plugcomputer.org/plugwiki/index.php/Setting_GuruPlug_to_be_a_stable_WiFi_Client'
+license=('GPL')
+source=("http://www.plugcomputer.org/plugwiki/images/a/ad/Uaputl.tar.gz"
+        "uaputl.diff"
+        "rc.uaputl"
+        "conf.uaputl")
+md5sums=('1925d1f8e2507f92d603e202e213b857'
+         '95c331bf6213ae7acfaceff64e28d6d4'
+         'd65080b91ed87b07faf71289d669695d'
+         '0b856e548401350a1a124a215e2432f2')
+backup=(etc/conf.d/uaputl.conf etc/uaputl/uaputl.conf)
+
+build() {
+  cd "$srcdir"
+  patch -Np1 -i uaputl.diff
+  cd "uaputl"
+  make uaputl
+}
+
+package() {
+  local f
+  cd "$srcdir"
+  install -Dm755 rc.uaputl "$pkgdir/etc/rc.d/uaputl"
+  install -Dm644 conf.uaputl "$pkgdir/etc/conf.d/uaputl.conf"
+  cd "uaputl"
+  install -Dm755 uaputl "$pkgdir/usr/bin/uaputl"
+  cd config
+  install -Dm644 80211d_domain.conf "$pkgdir/usr/share/uaputl/80211d_domain.conf"
+  install -d "$pkgdir/etc/uaputl"
+  install -m644 -t "$pkgdir/etc/uaputl" pack.conf sample_cal_data_bg_8688.conf uapcoex.conf uaputl.conf
+}
