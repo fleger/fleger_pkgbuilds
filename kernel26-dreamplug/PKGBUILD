@@ -24,9 +24,9 @@ source=(ftp://ftp.kernel.org/pub/linux/kernel/v2.6/linux-$_basekernel.tar.bz2
         ftp://ftp.archlinux.org/other/kernel26/${_patchname}.bz2
         https://github.com/archlinuxarm/PKGBUILDs/raw/$_alarmcommit/core/kernel26/$_basekernel.config
         https://github.com/archlinuxarm/PKGBUILDs/raw/$_alarmcommit/core/kernel26/archlinuxarm.patch
-        http://sheeva.with-linux.com/sheeva/$_basekernel/$pkgver/source/0002-Driver-for-Marvell-Libertas-8688-SDIO-micro-AP-suppo-2.6.39.patch
-        http://sheeva.with-linux.com/sheeva/$_basekernel/$pkgver/source/mvsdio-1-2.6.30.patch
-        http://sheeva.with-linux.com/sheeva/$_basekernel/$pkgver/source/mvsdio-2.patch)
+        http://sheeva.with-linux.com/sheeva/2.6/$_basekernel/$pkgver/source/0002-Driver-for-Marvell-Libertas-8688-SDIO-micro-AP-suppo-2.6.39.patch
+        http://sheeva.with-linux.com/sheeva/2.6/$_basekernel/$pkgver/source/mvsdio-1-2.6.30.patch
+        http://sheeva.with-linux.com/sheeva/2.6/$_basekernel/$pkgver/source/mvsdio-2.patch)
 md5sums=('1aab7a741abe08d42e8eccf20de61e05'
          'b23d7def30e57242cfe088f4d8ca8baa'
          '345e89be67109f26eec8183ed8858386'
