@@ -2,7 +2,7 @@
 
 pkgname=sd8688-firmware
 pkgver=20110710
-pkgrel=1
+pkgrel=2
 pkgdesc="Firmware for Marvell SD8688 WiFi/Bluetooth chipset."
 arch=('any')
 url='http://plugcomputer.org/plugwiki/index.php/Setting_GuruPlug_to_be_a_stable_WiFi_Client'
@@ -12,6 +12,8 @@ source=("http://dreamplug.googlecode.com/files/dreamplug_debian_v0.2.zip.001"
         "http://dreamplug.googlecode.com/files/dreamplug_debian_v0.2.zip.002")
 md5sums=('2e0dc6b89959f717149d454d9cf0a200'
          '13b82fb1c58141f9e7a07fa25928de16')
+noextract=(dreamplug_debian_v0.2.zip.001 dreamplug_debian_v0.2.zip.002)
+
 build() {
   cd "$srcdir"
   cat "dreamplug_debian_v0.2.zip.001" "dreamplug_debian_v0.2.zip.002" | funzip > "dreamplug_debian_v0.2.tar.gz"
