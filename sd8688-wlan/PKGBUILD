@@ -1,14 +1,15 @@
 # Maintainer: Florian Léger <florian6 dot leger at laposte dot net>
 
 pkgname=sd8688-wlan
-pkgver=10.49.3.p70
+pkgver=26609.P64
+epoch=1
 pkgrel=1
 pkgdesc="WLAN driver for Marvell SD8688 WiFi/BlueTooth chipset."
 arch=('i686' 'x86_64' 'arm')
 url='http://plugcomputer.org/plugwiki/index.php/Setting_GuruPlug_to_be_a_stable_WiFi_Client'
 license=('GPL')
-depends=('kernel26' 'sd8688-firmware')
-makedepends=('kernel26-headers' 'gzip')
+depends=('linux' 'sd8688-firmware')
+makedepends=('linux-headers' 'gzip')
 install='sd8688-wlan.install'
 source=("http://plugcomputer.org/plugwiki/images/0/05/SD_WLAN.tar.gz"
         "sd_wlan.diff")
@@ -29,9 +30,8 @@ build() {
 
   make KERNELDIR="/usr/src/linux-$KERNEL_RELEASE" CROSS_COMPILE="" ARCH=$bArch
   
-  gzip -c "sd8xxx.ko" > "sd8xxx.ko.gz"
-  gzip -c "mcypt.ko" > "mcypt.ko.gz"
-  
+  gzip -9 "sd8xxx.ko"
+  gzip -9 "mcypt.ko"
 }
 
 package() {
