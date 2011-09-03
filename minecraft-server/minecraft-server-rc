@@ -10,7 +10,7 @@ _srvDir="/srv/minecraft"
 case "$1" in
   start)
     stat_busy "Starting minecraft-server"
-    if $(ck_daemon minecraft-server); then
+    if [[ ! -f "$_runDir/server.pid" ]]; then
       cd "$_srvDir"
       su minecraft -c "source /etc/profile && detachtty --dribble-file $_logDir/server_stdout.log --log-file $_logDir/detachtty.log --pid-file $_runDir/server.pid $_runDir/socket /usr/bin/minecraft-server nogui" &&
       add_daemon minecraft-server &&
@@ -21,7 +21,7 @@ case "$1" in
     ;;
   stop)
     stat_busy "Stopping minecraft-server"
-    if $(ck_daemon minecraft-server); then
+    if [[ ! -f "$_runDir/server.pid" ]]; then
       stat_fail
     else
       [[ -S "$_runDir/socket" ]] && expect - &> /dev/null << EOF
