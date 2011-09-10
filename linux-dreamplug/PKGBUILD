@@ -4,14 +4,14 @@ pkgbase="linux-dreamplug"
 pkgname=("linux-dreamplug" "linux-dreamplug-headers")       # Build kernel with a different name
 _kernelname=${pkgname#linux}
 _basekernel=3.0
-pkgver=${_basekernel}.1
+pkgver=${_basekernel}.3
 pkgrel=1
 arch=('arm')
 url="http://www.kernel.org/"
 license=('GPL2')
 makedepends=('xmlto' 'docbook-xsl' 'uboot-mkimage')
 options=('!strip')
-_alarmcommit="4d71a4cd2aef981a778f0821cf27efc7eff6236a"
+_alarmcommit="603dd0f45682e5dde954cd0e3cf0a9fcc1edeb04"
 source=("ftp://ftp.kernel.org/pub/linux/kernel/v3.0/linux-${_basekernel}.tar.bz2"
         "ftp://ftp.kernel.org/pub/linux/kernel/v3.0/patch-${pkgver}.bz2"
         "https://github.com/archlinuxarm/PKGBUILDs/raw/${_alarmcommit}/core/linux/archlinuxarm.patch"
@@ -22,9 +22,9 @@ source=("ftp://ftp.kernel.org/pub/linux/kernel/v3.0/linux-${_basekernel}.tar.bz2
         "http://sheeva.with-linux.com/sheeva/${_basekernel}/${pkgver}/source/mvsdio-2.patch")
 
 md5sums=('398e95866794def22b12dfbc15ce89c0'
-         'ac49f7907f1fc85fbab92d0f1aa1552a'
+         '1757786b9a9ffbd48ad9642199ff5bd7'
          '77e8e011485c2061616214d07356132e'
-         'fb612de187bc2625ed3971130113422f'
+         'a6753f9fa6ca818b87ea817106e01566'
          '9d3c56a4b999c8bfbd4018089a62f662'
          '915a9380e205d4ca8c179c745831c3e0'
          'e655da31381a7ca7347e610912d9c610'
@@ -97,7 +97,7 @@ build() {
 package_linux-dreamplug() {
   pkgdesc="The Linux Kernel and modules for DreamPlugs"
   groups=('base')
-  depends=('coreutils' 'linux-firmware' 'module-init-tools>=3.16' 'mkinitcpio>=0.7')
+  depends=('coreutils' 'linux-firmware' 'module-init-tools>=3.16')
   optdepends=('crda: to set the correct wireless channels of your country')
   provides=('linux' 'kernel26' 'kernel26-dreamplug')
   conflicts=('kernel26-dreamplug')
