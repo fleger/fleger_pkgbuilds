@@ -2,7 +2,7 @@
 
 pkgname=serieswatcher
 pkgver=0.1.3
-pkgrel=1
+pkgrel=2
 pkgdesc='A TV series browser and tracker application.'
 arch=('i686' 'x86_64')
 url='http://xf.iksaif.net/dev/serieswatcher.html'
