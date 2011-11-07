@@ -3,7 +3,7 @@ post_upgrade() {
 }
 
 post_install() {
-  cat << EOF
+  cat << "EOF"
 To change the per-user configuration, you need to copy the following file:
   install -Dm644 "/opt/WorldOfGoo/properties/config.txt" "$HOME/.WorldOfGoo/config.txt"
 And edit it.
