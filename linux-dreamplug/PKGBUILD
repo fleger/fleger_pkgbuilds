@@ -1,34 +1,39 @@
-# Maintainer: Florian Léger <florian6 dot leger at laposte.net>
-
 pkgbase="linux-dreamplug"
 pkgname=("linux-dreamplug" "linux-dreamplug-headers")       # Build kernel with a different name
 _kernelname=${pkgname#linux}
 _basekernel=3.0
-pkgver=${_basekernel}.3
+pkgver=${_basekernel}.6
 pkgrel=1
 arch=('arm')
 url="http://www.kernel.org/"
 license=('GPL2')
 makedepends=('xmlto' 'docbook-xsl' 'uboot-mkimage')
 options=('!strip')
-_alarmcommit="603dd0f45682e5dde954cd0e3cf0a9fcc1edeb04"
-source=("ftp://ftp.kernel.org/pub/linux/kernel/v3.0/linux-${_basekernel}.tar.bz2"
-        "ftp://ftp.kernel.org/pub/linux/kernel/v3.0/patch-${pkgver}.bz2"
+_alarmcommit="e99dc2fa87bc1ebab4ee7b8566011a67b6960c9d"
+source=("ftp://ftp.kernel.org/pub/linux/kernel/v${_basekernel}/linux-${_basekernel}.tar.bz2"
+        #"ftp://ftp.kernel.org/pub/linux/kernel/v${_basekernel}/patch-${pkgver}.bz2"
+        "ftp://ftp.archlinux.org/other/linux/patch-${pkgver}.gz"
         "https://github.com/archlinuxarm/PKGBUILDs/raw/${_alarmcommit}/core/linux/archlinuxarm.patch"
+        "https://github.com/archlinuxarm/PKGBUILDs/raw/${_alarmcommit}/core/linux/aufs3-base.patch"
+        "https://github.com/archlinuxarm/PKGBUILDs/raw/${_alarmcommit}/core/linux/aufs3-standalone.patch"
         "https://github.com/archlinuxarm/PKGBUILDs/raw/${_alarmcommit}/core/linux/config"
         "https://github.com/archlinuxarm/PKGBUILDs/raw/${_alarmcommit}/core/linux/change-default-console-loglevel.patch"
-        "http://sheeva.with-linux.com/sheeva/${_basekernel}/${pkgver}/source/linux-3.0-SDIO-micro-AP.patch"
-        "http://sheeva.with-linux.com/sheeva/${_basekernel}/${pkgver}/source/mvsdio-1-2.6.30.patch"
-        "http://sheeva.with-linux.com/sheeva/${_basekernel}/${pkgver}/source/mvsdio-2.patch")
+        "http://sheeva.with-linux.com/sheeva/${_basekernel}/3.0.4/source/linux-3.0-SDIO-micro-AP.patch"
+        "http://sheeva.with-linux.com/sheeva/${_basekernel}/3.0.4/source/mvsdio-1-2.6.30.patch"
+        "http://sheeva.with-linux.com/sheeva/${_basekernel}/3.0.4/source/mvsdio-2.patch"
+        "http://sheeva.with-linux.com/sheeva/${_basekernel}/3.0.4/source/linux-3.0.4-LIBERTAS-WEXT_PRIV.patch")
 
 md5sums=('398e95866794def22b12dfbc15ce89c0'
-         '1757786b9a9ffbd48ad9642199ff5bd7'
+         '792f01cc8874d03a84e47fd0e7065df8'
          '77e8e011485c2061616214d07356132e'
+         'b9248a75a3fe415a18d4730887daa339'
+         'd961e5dc52b4e4f98a6268b6dc4340fa'
          'a6753f9fa6ca818b87ea817106e01566'
          '9d3c56a4b999c8bfbd4018089a62f662'
          '915a9380e205d4ca8c179c745831c3e0'
          'e655da31381a7ca7347e610912d9c610'
-         '59664af0589cba9d3e18d6d1aac59833')
+         '59664af0589cba9d3e18d6d1aac59833'
+         '2d7ca8bbeab90a271312bdd32ad7169c')
 
 build() {
   cd "${srcdir}/linux-${_basekernel}"
@@ -38,10 +43,15 @@ build() {
   # Add Arch Linux ARM patch for ARMv5te plug computers
   patch -Np1 -i "${srcdir}/archlinuxarm.patch"
 
+  # Add AUFS3 patches
+  patch -Np1 -i "${srcdir}/aufs3-base.patch"
+  patch -Np1 -i "${srcdir}/aufs3-standalone.patch"
+
   # Add Sheeva With-Linux patches
   patch -Np1 -i "${srcdir}/linux-3.0-SDIO-micro-AP.patch"
   patch -Np1 -i "${srcdir}/mvsdio-1-2.6.30.patch"
   patch -Np1 -i "${srcdir}/mvsdio-2.patch"
+  patch -Np1 -i "${srcdir}/linux-3.0.4-LIBERTAS-WEXT_PRIV.patch"
 
   # add latest fixes from stable queue, if needed
   # http://git.kernel.org/?p=linux/kernel/git/stable/stable-queue.git
@@ -99,7 +109,7 @@ package_linux-dreamplug() {
   groups=('base')
   depends=('coreutils' 'linux-firmware' 'module-init-tools>=3.16')
   optdepends=('crda: to set the correct wireless channels of your country')
-  provides=('linux' 'kernel26' 'kernel26-dreamplug')
+  provides=('linux' 'kernel26' 'kernel26-dreamplug' 'aufs_friendly')
   conflicts=('kernel26-dreamplug')
   replaces=('kernel26-dreamplug' )
   install=${pkgname}.install
