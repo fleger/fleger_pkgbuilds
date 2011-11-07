@@ -1,0 +1,16 @@
+post_upgrade() {
+  xdg-icon-resource forceupdate --theme hicolor &> /dev/null
+}
+
+post_install() {
+  cat << EOF
+To change the per-user configuration, you need to copy the following file:
+  install -Dm644 "/opt/WorldOfGoo/properties/config.txt" "$HOME/.WorldOfGoo/config.txt"
+And edit it.
+EOF
+  post_upgrade
+}
+
+post_remove() {
+  post_upgrade
+}

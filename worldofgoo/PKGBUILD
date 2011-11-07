@@ -1,0 +1,51 @@
+# Maintainer: fleger <florian6 dot leger at laposte dot net>
+
+# Alternate version
+
+pkgname=worldofgoo
+_gamepkg="WorldOfGooSetup.1.41.tar.gz"
+pkgver=1.41
+pkgrel=1
+pkgdesc="A physics based puzzle/construction game (requires copy of the full game)"
+arch=('i686' 'x86_64')
+url="http://www.2dboy.com"
+license=('custom')
+depends=('bash' 'xdg-utils' 'mesa' 'sdl_mixer' 'hicolor-icon-theme')
+source=("WorldOfGooSetup.${pkgver}.tar.gz"
+        'WorldOfGoo.desktop'
+        'worldofgoo.sh')
+md5sums=('f5afa40893d0fbcc37885191404f6d8c'
+         'a738af5c46b74146daf5a19479f0241f'
+         '0d6299b0133eb678272e6292e9d8466b')
+install="${pkgname}.install"
+options=(!strip)
+
+package() {
+  local i
+
+  cd "${srcdir}/WorldOfGoo"
+
+  # Data
+  install -d "${pkgdir}/opt/WorldOfGoo"
+
+  cp -r "properties" "res" "linux-issues.txt" "readme.html" "${pkgdir}/opt/WorldOfGoo/"
+
+  if [ "x$CARCH" = "xi686" ]; then
+    install -Dm755 WorldOfGoo.bin32 "${pkgdir}/opt/WorldOfGoo/WorldOfGoo"
+  elif [ "x$CARCH" = "xx86_64" ]; then
+    install -Dm755 WorldOfGoo.bin64 "${pkgdir}/opt/WorldOfGoo/WorldOfGoo"
+  else
+    return 1
+  fi
+
+  # Icons, launcher and desktop launcher
+  install -Dm755 "${srcdir}/worldofgoo.sh" "${pkgdir}/usr/bin/worldofgoo"
+  install -Dm644 "${srcdir}/WorldOfGoo.desktop" "${pkgdir}/usr/share/applications/WorldOfGoo.desktop"
+  for i in 16x16 22x22 32x32 48x48 64x64 128x128; do
+    install -Dm644 "icons/${i}.png" "${pkgdir}/usr/share/icons/hicolor/${i}/apps/WorldOfGoo.png"
+  done
+  install -Dm644 "icons/scalable.svg" "${pkgdir}/usr/share/icons/hicolor/scalable/apps/WorldOfGoo.svg"
+
+  # License
+  install -Dm644 eula.txt "${pkgdir}/usr/share/licenses/${pkgname}/eula.txt"
+}
