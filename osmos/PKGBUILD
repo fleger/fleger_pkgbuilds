@@ -1,0 +1,47 @@
+# Maintainer: fleger <florian6 dot leger at laposte dot net>
+
+# ALternate, simpler version
+
+pkgname=osmos
+pkgver=1.6.1
+pkgrel=1
+pkgdesc="Enter the ambient world of Osmos: elegant, physics-based gameplay, dreamlike visuals, and a minimalist, electronic soundtrack."
+arch=("i686" "x86_64")
+url="http://www.hemispheregames.com/osmos/"
+license=("custom: commercial")
+depends=('bash' 'xdg-utils' 'hicolor-icon-theme' 'freetype2' 'openal' 'mesa' 'libvorbis')
+source=("Osmos_${pkgver}.tar.gz"
+        "osmos.desktop"
+        "osmos.sh")
+md5sums=('ed2cb029c20c25de719c28062e6fc9cf'
+         '10c60cc763c007fda42fc85f46076bcc'
+         '3f91d4bd69fb499674e6391da29ddcf6')
+install="${pkgname}.install"
+
+package() {
+	local i
+
+  cd "${srcdir}/Osmos"
+
+  install -d "${pkgdir}/opt/osmos"
+  
+  cp -r "Fonts" "Sounds" "Textures" readme.html *.loc *.cfg "${pkgdir}/opt/osmos/"
+  
+  if [ "x$CARCH" = "xi686" ]; then
+    install -Dm755 Osmos.bin32 "${pkgdir}/opt/osmos/Osmos"
+  elif [ "x$CARCH" = "xx86_64" ]; then
+    install -Dm755 Osmos.bin64 "${pkgdir}/opt/osmos/Osmos"
+  else
+    return 1
+  fi
+  
+  install -Dm755 "${srcdir}/osmos.sh" "${pkgdir}/usr/bin/osmos"
+	install -Dm644 eula.txt "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+	install -Dm644 "${srcdir}/osmos.desktop" "${pkgdir}/usr/share/applications/osmos.desktop"
+
+  cd Icons
+  for i in *.png; do
+    install -Dm644 "${i}" "${pkgdir}/usr/share/icons/hicolor/${i%.*}/apps/Osmos.png"
+  done
+
+}
