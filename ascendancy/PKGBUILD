@@ -1,0 +1,77 @@
+# Maintainer: Florian Léger <florian6 dot leger at laposte dot net>
+
+# Package Options - Can be overwritten by the environment
+
+# CD_DIR: path where your Ascendancy CDROM is mounted
+: ${CD_DIR:="$HOME/media/Ascend.iso/"}
+
+# NON_US_RELEASE: false if you have an US version of the game, true otherwise.
+: ${NON_US_RELEASE:="true"}
+
+pkgname=ascendancy
+pkgdesc="Science fiction turn-based strategy game (uses DosBox)"
+pkgver=1.8.10
+pkgrel=1
+arch=(any)
+license=("custom")
+url="http://www.logicfactory.com/main/Logic_Factory.html"
+depends=("modfs-git" "dosbox" "dos32a")
+makedepends=("convmv" "findutils")
+source=("ascendancy.desktop"
+        "ascendancy-config.desktop"
+        "ascendancy.png::http://www.logicfactory.com/main/Logic_Factory_files/Ascendancy App Icon 1024x1024 cutout.png"
+        "libascendancy.sh"
+        "ascendancy.sh"
+        "ascendancy-config.sh"
+        "01-user.conf"
+        "99-data.conf"
+        "cob.cfg")
+md5sums=('8220b2cbc77550f8ceb9fed0e9150645'
+         '7f3d6de0b3faeb8cb3ae010019fee4dd'
+         '66f837b34eae60d7460a27faf07f15c8'
+         'a00edab246c0609ad51d93beb19b2842'
+         '4843cdccb18345985094e2e4af67718c'
+         '21efad1eb015797c12a2fffdfe877954'
+         'dd6f2982c95ea14dd479469e9c98a5fd'
+         '38009106cef651c7963c5209b80a393c'
+         '64095329fffbe095fe803cc1b421b885')
+
+if "$NON_US_RELEASE"; then
+  source+=("ftp://ftp.physics.auth.gr/pub/mirrors/ftp.patches-scrolls.de/pub/Ascendancy/antag_f.zip")
+  md5sums+=("3d297d90f1bf68eb680dfcfb5652c2f7")
+else
+  source+=("ftp://ftp.physics.auth.gr/pub/mirrors/ftp.patches-scrolls.de/pub/Ascendancy/antag.zip")
+  md5sums+=("842a7759c956e403aac375e83e49dfa9")
+fi
+
+
+package() {
+  # Copy original resources (case-insensitive)
+  cd "$CD_DIR/data"
+  local i
+  for i in "*.cob" "*.dig" "aildrvr.lst" "setsound.exe" "uvconfig.exe"; do
+    find . -maxdepth 1 -iname "$i" -exec install -Dm644 '{}' "$pkgdir/usr/share/games/ascendancy/data/{}" \;
+  done
+  
+  install -Dm644 "$srcdir/cob.cfg" "$pkgdir/usr/share/games/ascendancy/data/cob.cfg"
+
+  # Install 1.8.10 patch
+  install -Dm644 "$srcdir/ANTAG.EXE" "$pkgdir/usr/share/games/ascendancy/data/ascend.exe"
+
+  cd "$pkgdir/usr/share/games/ascendancy/data"
+  
+  # Use dos32a instead of dos4gw
+  ln -s "/usr/share/dos32a/dos32a.exe" "dos4gw.exe"
+
+  # Fix case
+  convmv --lower --notest -r *
+  
+  install -Dm644 "$srcdir/01-user.conf" "$pkgdir/etc/ascendancy.d/01-user.conf"
+  install -Dm644 "$srcdir/99-data.conf" "$pkgdir/etc/ascendancy.d/99-data.conf"
+  install -Dm644 "$srcdir/ascendancy.desktop" "$pkgdir/usr/share/applications/ascendancy.desktop"
+  install -Dm644 "$srcdir/ascendancy-config.desktop" "$pkgdir/usr/share/applications/ascendancy-config.desktop"
+  install -Dm644 "$srcdir/ascendancy.png" "$pkgdir/usr/share/pixmaps/ascendancy.png"
+  install -Dm644 "$srcdir/libascendancy.sh" "$pkgdir/usr/lib/libascendancy.sh"
+  install -Dm755 "$srcdir/ascendancy.sh" "$pkgdir/usr/bin/ascendancy"
+  install -Dm755 "$srcdir/ascendancy-config.sh" "$pkgdir/usr/bin/ascendancy-config"
+}
