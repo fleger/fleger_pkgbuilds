@@ -1,6 +1,6 @@
 diff -Naur a/SD_WLAN/SD-WLAN-BT-8688-LINUX2625-SAAR-10.49.3.p70-26609.P64_B1/wlan_src/Makefile b/SD_WLAN/SD-WLAN-BT-8688-LINUX2625-SAAR-10.49.3.p70-26609.P64_B1/wlan_src/Makefile
 --- a/SD_WLAN/SD-WLAN-BT-8688-LINUX2625-SAAR-10.49.3.p70-26609.P64_B1/wlan_src/Makefile	2010-07-13 22:08:32.000000000 +0200
-+++ b/SD_WLAN/SD-WLAN-BT-8688-LINUX2625-SAAR-10.49.3.p70-26609.P64_B1/wlan_src/Makefile	2011-04-30 19:15:14.854884484 +0200
++++ b/SD_WLAN/SD-WLAN-BT-8688-LINUX2625-SAAR-10.49.3.p70-26609.P64_B1/wlan_src/Makefile	2011-11-10 11:11:37.288408994 +0100
 @@ -89,7 +89,7 @@
  # ARCH specifies the architecture of the target processor, this kernel
  # module will run.
@@ -12,7 +12,7 @@ diff -Naur a/SD_WLAN/SD-WLAN-BT-8688-LINUX2625-SAAR-10.49.3.p70-26609.P64_B1/wla
  ARCH ?= arm
 diff -Naur a/SD_WLAN/SD-WLAN-BT-8688-LINUX2625-SAAR-10.49.3.p70-26609.P64_B1/wlan_src/wlan/wlan_drv.h b/SD_WLAN/SD-WLAN-BT-8688-LINUX2625-SAAR-10.49.3.p70-26609.P64_B1/wlan_src/wlan/wlan_drv.h
 --- a/SD_WLAN/SD-WLAN-BT-8688-LINUX2625-SAAR-10.49.3.p70-26609.P64_B1/wlan_src/wlan/wlan_drv.h	2010-07-13 22:08:32.000000000 +0200
-+++ b/SD_WLAN/SD-WLAN-BT-8688-LINUX2625-SAAR-10.49.3.p70-26609.P64_B1/wlan_src/wlan/wlan_drv.h	2011-05-08 18:16:07.695721609 +0200
++++ b/SD_WLAN/SD-WLAN-BT-8688-LINUX2625-SAAR-10.49.3.p70-26609.P64_B1/wlan_src/wlan/wlan_drv.h	2011-11-10 11:11:37.288408994 +0100
 @@ -727,11 +727,12 @@
  wlan_copy_mcast_addr(wlan_adapter * Adapter, struct net_device *dev)
  {
@@ -30,27 +30,36 @@ diff -Naur a/SD_WLAN/SD-WLAN-BT-8688-LINUX2625-SAAR-10.49.3.p70-26609.P64_B1/wla
      }
  
      return i;
+diff -Naur a/SD_WLAN/SD-WLAN-BT-8688-LINUX2625-SAAR-10.49.3.p70-26609.P64_B1/wlan_src/wlan/wlan_headers.h b/SD_WLAN/SD-WLAN-BT-8688-LINUX2625-SAAR-10.49.3.p70-26609.P64_B1/wlan_src/wlan/wlan_headers.h
+--- a/SD_WLAN/SD-WLAN-BT-8688-LINUX2625-SAAR-10.49.3.p70-26609.P64_B1/wlan_src/wlan/wlan_headers.h	2010-07-13 22:08:32.000000000 +0200
++++ b/SD_WLAN/SD-WLAN-BT-8688-LINUX2625-SAAR-10.49.3.p70-26609.P64_B1/wlan_src/wlan/wlan_headers.h	2011-11-10 11:12:58.048412861 +0100
+@@ -53,6 +53,7 @@
+ #include        <linux/proc_fs.h>
+ #include	<linux/ptrace.h>
+ #include	<linux/string.h>
++#include        <linux/hardirq.h>
+ 
+ #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,18)
+ #include	<linux/config.h>
 diff -Naur a/SD_WLAN/SD-WLAN-BT-8688-LINUX2625-SAAR-10.49.3.p70-26609.P64_B1/wlan_src/wlan/wlan_linux.h b/SD_WLAN/SD-WLAN-BT-8688-LINUX2625-SAAR-10.49.3.p70-26609.P64_B1/wlan_src/wlan/wlan_linux.h
 --- a/SD_WLAN/SD-WLAN-BT-8688-LINUX2625-SAAR-10.49.3.p70-26609.P64_B1/wlan_src/wlan/wlan_linux.h	2010-07-13 22:08:32.000000000 +0200
-+++ b/SD_WLAN/SD-WLAN-BT-8688-LINUX2625-SAAR-10.49.3.p70-26609.P64_B1/wlan_src/wlan/wlan_linux.h	2011-04-30 18:40:06.634443626 +0200
-@@ -304,7 +304,13 @@
++++ b/SD_WLAN/SD-WLAN-BT-8688-LINUX2625-SAAR-10.49.3.p70-26609.P64_B1/wlan_src/wlan/wlan_linux.h	2011-11-10 11:20:28.178434424 +0100
+@@ -304,7 +304,11 @@
  #define MODULE_PUT	module_put(THIS_MODULE)
  #endif
  
 -#define OS_INIT_SEMAPHORE(x)    	init_MUTEX(x)
-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,26)
-+#include <linux/semaphore.h>
-+#else
-+#include <asm/semaphore.h>
-+#endif
-+
++#ifndef init_MUTEX
 +#define OS_INIT_SEMAPHORE(x)    	sema_init(x, 1)
++#else
++#define OS_INIT_SEMAPHORE(x)      init_MUTEX(x)
++#endif
  #define OS_ACQ_SEMAPHORE_BLOCK(x)	down_interruptible(x)
  #define OS_ACQ_SEMAPHORE_NOBLOCK(x)	down_trylock(x)
  #define OS_REL_SEMAPHORE(x) 		up(x)
 diff -Naur a/SD_WLAN/SD-WLAN-BT-8688-LINUX2625-SAAR-10.49.3.p70-26609.P64_B1/wlan_src/wlan/wlan_main.c b/SD_WLAN/SD-WLAN-BT-8688-LINUX2625-SAAR-10.49.3.p70-26609.P64_B1/wlan_src/wlan/wlan_main.c
 --- a/SD_WLAN/SD-WLAN-BT-8688-LINUX2625-SAAR-10.49.3.p70-26609.P64_B1/wlan_src/wlan/wlan_main.c	2010-07-13 22:08:32.000000000 +0200
-+++ b/SD_WLAN/SD-WLAN-BT-8688-LINUX2625-SAAR-10.49.3.p70-26609.P64_B1/wlan_src/wlan/wlan_main.c	2011-04-30 18:41:58.583837145 +0200
++++ b/SD_WLAN/SD-WLAN-BT-8688-LINUX2625-SAAR-10.49.3.p70-26609.P64_B1/wlan_src/wlan/wlan_main.c	2011-11-10 11:11:37.288408994 +0100
 @@ -663,7 +663,7 @@
          /* Multicast */
          Adapter->CurrentPacketFilter &= ~HostCmd_ACT_MAC_PROMISCUOUS_ENABLE;
@@ -80,7 +89,7 @@ diff -Naur a/SD_WLAN/SD-WLAN-BT-8688-LINUX2625-SAAR-10.49.3.p70-26609.P64_B1/wla
                             Adapter->MulticastList[i][0],
 diff -Naur a/SD_WLAN/SD-WLAN-BT-8688-LINUX2625-SAAR-10.49.3.p70-26609.P64_B1/wlan_src/wlan/wlan_proc.c b/SD_WLAN/SD-WLAN-BT-8688-LINUX2625-SAAR-10.49.3.p70-26609.P64_B1/wlan_src/wlan/wlan_proc.c
 --- a/SD_WLAN/SD-WLAN-BT-8688-LINUX2625-SAAR-10.49.3.p70-26609.P64_B1/wlan_src/wlan/wlan_proc.c	2010-07-13 22:08:32.000000000 +0200
-+++ b/SD_WLAN/SD-WLAN-BT-8688-LINUX2625-SAAR-10.49.3.p70-26609.P64_B1/wlan_src/wlan/wlan_proc.c	2011-05-08 18:23:03.036804702 +0200
++++ b/SD_WLAN/SD-WLAN-BT-8688-LINUX2625-SAAR-10.49.3.p70-26609.P64_B1/wlan_src/wlan/wlan_proc.c	2011-11-10 11:11:37.288408994 +0100
 @@ -72,7 +72,7 @@
      int i;
      char *p = page;
