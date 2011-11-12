@@ -1,58 +1,35 @@
-# /bin/bash
+#! /bin/bash
 
-shopt -s extglob
-
-game="darkforces"
-sysdir="/usr/share/games/$game"
-usrdir="$HOME/.$game"
-firstRun=false
-
-declare -A symlinks=([dark/?(bootmkr.exe|dark.exe|dos4gw.exe|drive.cd|imuse.exe|install.exe|readme.txt)]="")
-declare -A copies=([dark/?(imuse.ini|jedi.cfg|local.msg)]="")
-
-if [ ! -d "$usrdir" ]; then
-    mkdir -p "$usrdir"
-    firstRun=true
+if [ ! -f "/usr/lib/libdarkforces.sh" ]; then
+  echo "Can't load /usr/lib/libdarkforces.sh" >&2
+  exit 1
+else
+  . "/usr/lib/libdarkforces.sh"
 fi
 
-for f in "${!symlinks[@]}"; do
-    mkdir -p "$usrdir/${symlinks[$f]}"
-    cp -urs "$sysdir/"$f "$usrdir/${symlinks[$f]}" 2> /dev/null
-done
+darkforces.script.game() {
+  local batchScript='
+    mount -u c
+    mount c "'"$DF_MOUNTPOINT"'"
+    c:
+  '
+  if darkforces.firstRun; then
+    batchScript+='
+      cd \
+      rename cd.id cd.bak
+      cd \dark
+      install.exe
+      cd \
+      rename cd.bak cd.id
+    '
+  fi
+  batchScript+="
+    cd \\dark
+    dark.exe $@
+    exit
+  "
 
-for f in "${!copies[@]}"; do
-    mkdir -p "$usrdir/${copies[$f]}"
-    cp -nr "$sysdir/"$f "$usrdir/${copies[$f]}"   2> /dev/null
-done
+  dosbox -conf "$DF_DOSBOX_CONF" -exit -c "$batchScript"
+}
 
-dosboxMainConfig="$(dosbox -printconf)"
-dosboxConfigBaseName="""$(basename "$dosboxMainConfig")"""
-
-if [ ! -e "$usrdir/$dosboxConfigBaseName" ]; then
-    cp "$dosboxMainConfig" "$usrdir/$dosboxConfigBaseName"
-fi
-
-batchScript="""
-mount -u c
-mount -u d
-mount c "$usrdir"
-mount d "$sysdir"
-c:
-cd \
-"""
-
-if [ "$1" = "--setup" ] || $firstRun; then
-    batchScript+="""
-install.exe
-"""
-fi
-
-if [ "$1" != "--setup" ]; then
-    batchScript+="""
-dark.exe
-"""
-fi
-
-batchScript+="exit"
-
-dosbox -conf "$usrdir/$dosboxConfigBaseName" -c "$batchScript" -exit
+darkforces.run darkforces.script.game "$@"

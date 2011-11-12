@@ -10,6 +10,6 @@ Type=Application
 Terminal=false
 Icon=darkforces
 Exec=darkforces
-Categories=Application;Game;ActionGame;
+Categories=Game;ActionGame;
 
 
