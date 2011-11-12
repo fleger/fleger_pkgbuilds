@@ -16,7 +16,7 @@ source=("http://plugcomputer.org/plugwiki/images/0/05/SD_WLAN.tar.gz"
 md5sums=('2f279f30bee27ca52118b931b39a922b'
          '03606599a4ade1977e9e39935307c38e')
 
-: ${_extramodules:=extramodules-3.1-ARCH}
+: ${_extramodules:=$(basename $(readlink -f "/lib/modules/$(uname -r)/extramodules"))}
 _kernver="$(cat /lib/modules/${_extramodules}/version)"
 
 build() {

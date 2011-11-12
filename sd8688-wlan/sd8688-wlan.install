@@ -1,4 +1,4 @@
-EXTRA_MODULES=extramodules-3.1-ARCH
+EXTRA_MODULES=extramodules-3.1-dreamplug
 
 post_install() { 
   cat << EOM
