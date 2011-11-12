@@ -1,28 +1,38 @@
 # Maintainer: Florian Léger <florian6 dot leger at laposte dot net>
 pkgname=arkanoid
 pkgver=1.0
-pkgrel=2
-pkgdesc="Breakout game (uses Dosbox)."
+pkgrel=3
+pkgdesc="Breakout game (uses DOSBox)"
 arch=(any)
 url="http://en.wikipedia.org/wiki/Arkanoid"
 license=('custom')
-depends=(dosbox)
-source=("http://www.oldgames.sk/downloads/oldgames/logic/Arkanoid/${pkgname}.zip"
+depends=('modfs-git' 'dosbox')
+source=("arkanoid.zip::http://files.abandonia.com/download.php?game=Arkanoid&secure=f4c6e3932006e70fb7a28beb5ca0b702&td=1321094229"
         "${pkgname}.sh"
         "${pkgname}.desktop"
-        "${pkgname}.png")
-md5sums=('e45759e2463ee9910ee4ac7663ba0bac'
-         'ae8acf91cb9bffcf714f235c891b25f6'
+        "${pkgname}.png"
+        "lib${pkgname}.sh"
+        "99-data.conf"
+        "01-user.conf")
+md5sums=('3c75be3176824dee1e2873c3a899f1b0'
+         'aaa8eab6ae9ab15414179b14f0524fdb'
          '362c73cdc1df7f7c5e7072bdb8953683'
-         '6acd300073e4a21f968ec5d90e0eacfe')
+         '6acd300073e4a21f968ec5d90e0eacfe'
+         '019d59770031ae7582faf245eb323713'
+         '326053ac183cf662c682154455343b54'
+         '19f59f4af9aee97ac9dc677a6eb98f6f')
 
 package() {
-  cd "$srcdir"
-  install -Dm644 ARKANOID.COM "$pkgdir/usr/share/games/$pkgname/arkanoid.com"
-  install -Dm644 ARKANOID.PGM "$pkgdir/usr/share/games/$pkgname/arkanoid.pgm"
-  install -Dm644 ARKANOID.SCR "$pkgdir/usr/share/games/$pkgname/arkanoid.scr"
+  cd "${srcdir}"
 
-  install -Dm644 ${pkgname}.desktop "$pkgdir/usr/share/applications/${pkgname}.desktop"
-  install -Dm755 ${pkgname}.sh "$pkgdir/usr/bin/${pkgname}"
-  install -Dm644 ${pkgname}.png "$pkgdir/usr/share/icons/${pkgname}.png"
+  install -Dm644 ARKANOID.COM "${pkgdir}/usr/share/games/${pkgname}/data/arkanoid.com"
+  install -Dm644 ARKANOID.DAT "${pkgdir}/usr/share/games/${pkgname}/data/arkanoid.dat"
+
+  install -Dm644 "${pkgname}.desktop" "${pkgdir}/usr/share/applications/${pkgname}.desktop"
+  install -Dm755 "${pkgname}.sh" "${pkgdir}/usr/bin/${pkgname}"
+  install -Dm644 "lib${pkgname}.sh" "${pkgdir}/usr/lib/lib${pkgname}.sh"
+  install -Dm644 "${pkgname}.png" "${pkgdir}/usr/share/pixmaps/${pkgname}.png"
+
+  install -Dm644 "99-data.conf" "${pkgdir}/etc/${pkgname}.d/99-data.conf"
+  install -Dm644 "01-user.conf" "${pkgdir}/etc/${pkgname}.d/01-user.conf"
 }
