@@ -1,35 +1,45 @@
+# Maintainer: Florian Léger <florian6 dot leger at laposte dot net>
+
 pkgbase="linux-dreamplug"
 pkgname=("linux-dreamplug" "linux-dreamplug-headers")       # Build kernel with a different name
 _kernelname=${pkgname#linux}
-_basekernel=3.0
-pkgver=${_basekernel}.6
+_basekernel=3.1
+pkgver=${_basekernel}
 pkgrel=1
 arch=('arm')
 url="http://www.kernel.org/"
 license=('GPL2')
 makedepends=('xmlto' 'docbook-xsl' 'uboot-mkimage')
 options=('!strip')
-_alarmcommit="e99dc2fa87bc1ebab4ee7b8566011a67b6960c9d"
-source=("ftp://ftp.kernel.org/pub/linux/kernel/v${_basekernel}/linux-${_basekernel}.tar.bz2"
-        #"ftp://ftp.kernel.org/pub/linux/kernel/v${_basekernel}/patch-${pkgver}.bz2"
-        "ftp://ftp.archlinux.org/other/linux/patch-${pkgver}.gz"
+_alarmcommit="ad11a72d8d52043b42fc6a0b2995d1d02ac3b375"
+source=("ftp://ftp.kernel.org/pub/linux/kernel/v3.x/linux-${_basekernel}.tar.bz2"
+        #"ftp://ftp.kernel.org/pub/linux/kernel/v3.x/patch-${pkgver}.bz2"
         "https://github.com/archlinuxarm/PKGBUILDs/raw/${_alarmcommit}/core/linux/archlinuxarm.patch"
+        "https://github.com/archlinuxarm/PKGBUILDs/raw/${_alarmcommit}/core/linux/aufs3-kbuild.patch"
         "https://github.com/archlinuxarm/PKGBUILDs/raw/${_alarmcommit}/core/linux/aufs3-base.patch"
         "https://github.com/archlinuxarm/PKGBUILDs/raw/${_alarmcommit}/core/linux/aufs3-standalone.patch"
+        "https://github.com/archlinuxarm/PKGBUILDs/raw/${_alarmcommit}/core/linux/aufs3-git-extras.patch"
         "https://github.com/archlinuxarm/PKGBUILDs/raw/${_alarmcommit}/core/linux/config"
         "https://github.com/archlinuxarm/PKGBUILDs/raw/${_alarmcommit}/core/linux/change-default-console-loglevel.patch"
-        "http://sheeva.with-linux.com/sheeva/${_basekernel}/3.0.4/source/linux-3.0-SDIO-micro-AP.patch"
-        "http://sheeva.with-linux.com/sheeva/${_basekernel}/3.0.4/source/mvsdio-1-2.6.30.patch"
-        "http://sheeva.with-linux.com/sheeva/${_basekernel}/3.0.4/source/mvsdio-2.patch"
-        "http://sheeva.with-linux.com/sheeva/${_basekernel}/3.0.4/source/linux-3.0.4-LIBERTAS-WEXT_PRIV.patch")
+        "https://github.com/archlinuxarm/PKGBUILDs/raw/${_alarmcommit}/core/linux/dib0700-fix.patch"
+        "https://github.com/archlinuxarm/PKGBUILDs/raw/${_alarmcommit}/core/linux/usb-add-reset-resume-quirk-for-several-webcams.patch"
+        "https://github.com/archlinuxarm/PKGBUILDs/raw/${_alarmcommit}/core/linux/md-raid10-fix-bug-when-activating-a-hot-spare.patch"
+        "http://sheeva.with-linux.com/sheeva/3/${_basekernel}/${pkgver}/source/linux-3.0-SDIO-micro-AP.patch"
+        "http://sheeva.with-linux.com/sheeva/3/${_basekernel}/${pkgver}/source/mvsdio-1-2.6.30.patch"
+        "http://sheeva.with-linux.com/sheeva/3/${_basekernel}/${pkgver}/source/mvsdio-2.patch"
+        "http://sheeva.with-linux.com/sheeva/3/${_basekernel}/${pkgver}/source/linux-3.0.4-LIBERTAS-WEXT_PRIV.patch")
 
-md5sums=('398e95866794def22b12dfbc15ce89c0'
-         '792f01cc8874d03a84e47fd0e7065df8'
-         '77e8e011485c2061616214d07356132e'
-         'b9248a75a3fe415a18d4730887daa339'
-         'd961e5dc52b4e4f98a6268b6dc4340fa'
-         'a6753f9fa6ca818b87ea817106e01566'
+md5sums=('8d43453f8159b2332ad410b19d86a931'
+         '2b2b459c34e55e68fc53ac30766ed139'
+         '3f64ed9d71499fe9293dc671f4e4087e'
+         '29628745258df910abfb8cb24ca3ccd9'
+         'c9e6e8bb0774a89f7f9bd30a13be7532'
+         '55b04499a4578e586cf5a4d0b69fc5aa'
+         'e1720c5ca9bbdc4e0b0760b05d66ef74'
          '9d3c56a4b999c8bfbd4018089a62f662'
+         'abcd7b4b5676deed0114684e555f7c0f'
+         'd00814b57448895e65fbbc800e8a58ba'
+         '5967b6e2c3bc61b9718716d95ccfdc22'
          '915a9380e205d4ca8c179c745831c3e0'
          'e655da31381a7ca7347e610912d9c610'
          '59664af0589cba9d3e18d6d1aac59833'
@@ -38,14 +48,34 @@ md5sums=('398e95866794def22b12dfbc15ce89c0'
 build() {
   cd "${srcdir}/linux-${_basekernel}"
 
-  patch -p1 -i "${srcdir}/patch-${pkgver}"
+  # Add upstream patch
+  #patch -p1 -i "${srcdir}/patch-${pkgver}"
+
+  # Add latest fixes from stable queue, if needed
+  # http://git.kernel.org/?p=linux/kernel/git/stable/stable-queue.git
+
+  # Fix dib0700 driver
+  # http://git.linuxtv.org/pb/media_tree.git/shortlog/refs/heads/for_v3.0
+  # FS#25939
+  patch -Np1 -i "${srcdir}/dib0700-fix.patch"
+
+  # Add the USB_QUIRK_RESET_RESUME for several webcams
+  # FS#26528
+  patch -Np1 -i "${srcdir}/usb-add-reset-resume-quirk-for-several-webcams.patch"
+
+  # Fix RAID10 hot spare activation (critical)
+  # https://git.kernel.org/?p=linux/kernel/git/stable/stable-queue.git;a=blob_plain;f=queue-3.1/md-raid10-fix-bug-when-activating-a-hot-spare.patch;h=880849db5b7089b523f72c4d67a473e5330037fc;hb=HEAD
+  # FS#26767
+  patch -Np1 -i "${srcdir}/md-raid10-fix-bug-when-activating-a-hot-spare.patch"
 
   # Add Arch Linux ARM patch for ARMv5te plug computers
   patch -Np1 -i "${srcdir}/archlinuxarm.patch"
 
   # Add AUFS3 patches
-  patch -Np1 -i "${srcdir}/aufs3-base.patch"
-  patch -Np1 -i "${srcdir}/aufs3-standalone.patch"
+  patch -Np1 -i ${srcdir}/aufs3-kbuild.patch
+  patch -Np1 -i ${srcdir}/aufs3-base.patch
+  patch -Np1 -i ${srcdir}/aufs3-standalone.patch
+  patch -Np1 -i ${srcdir}/aufs3-git-extras.patch
 
   # Add Sheeva With-Linux patches
   patch -Np1 -i "${srcdir}/linux-3.0-SDIO-micro-AP.patch"
@@ -53,10 +83,7 @@ build() {
   patch -Np1 -i "${srcdir}/mvsdio-2.patch"
   patch -Np1 -i "${srcdir}/linux-3.0.4-LIBERTAS-WEXT_PRIV.patch"
 
-  # add latest fixes from stable queue, if needed
-  # http://git.kernel.org/?p=linux/kernel/git/stable/stable-queue.git
-
-  # set DEFAULT_CONSOLE_LOGLEVEL to 4 (same value as the 'quiet' kernel param)
+  # Set DEFAULT_CONSOLE_LOGLEVEL to 4 (same value as the 'quiet' kernel param)
   # remove this when a Kconfig knob is made available by upstream
   # (relevant patch sent upstream: https://lkml.org/lkml/2011/7/26/227)
   patch -Np1 -i "${srcdir}/change-default-console-loglevel.patch"
@@ -71,13 +98,10 @@ build() {
     sed -i "s|CONFIG_LOCALVERSION=.*|CONFIG_LOCALVERSION=\"${_kernelname}\"|g" ./.config
   fi
 
-  # remove the sublevel from Makefile
-  # this ensures our kernel version is always 3.X-ARCH
-  # this way, minor kernel updates will not break external modules
-  # we need to change this soon, see FS#16702
-  sed -ri 's|^(SUBLEVEL =).*|\1|' Makefile
+  # Set extraversion to pkgrel
+  sed -ri "s|^(EXTRAVERSION =).*|\1 -${pkgrel}|" Makefile
 
-  # get kernel version
+  # Get kernel version
   make prepare
 
   # load configuration
@@ -106,12 +130,11 @@ build() {
 
 package_linux-dreamplug() {
   pkgdesc="The Linux Kernel and modules for DreamPlugs"
-  groups=('base')
   depends=('coreutils' 'linux-firmware' 'module-init-tools>=3.16')
   optdepends=('crda: to set the correct wireless channels of your country')
   provides=('linux' 'kernel26' 'kernel26-dreamplug' 'aufs_friendly')
   conflicts=('kernel26-dreamplug')
-  replaces=('kernel26-dreamplug' )
+  replaces=('kernel26-dreamplug')
   install=${pkgname}.install
 
   cd "${srcdir}/linux-${_basekernel}"
@@ -137,6 +160,11 @@ package_linux-dreamplug() {
   rm -rf "${pkgdir}/lib/firmware"
   # gzip -9 all modules to safe 100MB of space
   find "${pkgdir}" -name '*.ko' -exec gzip -9 {} \;
+   # make room for external modules
+  ln -s "../extramodules-${_basekernel}${_kernelname:--ARCH}" "${pkgdir}/lib/modules/${_kernver}/extramodules"
+  # add real version for building modules and running depmod from post_install/upgrade
+  mkdir -p "${pkgdir}/lib/modules/extramodules-${_basekernel}${_kernelname:--ARCH}"
+  echo "${_kernver}" > "${pkgdir}/lib/modules/extramodules-${_basekernel}${_kernelname:--ARCH}/version"
 }
 
 package_linux-dreamplug-headers() {
