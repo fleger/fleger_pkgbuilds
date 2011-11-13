@@ -1,61 +1,34 @@
 #! /bin/bash
 
-shopt -s extglob
-
-game="tiefighter"
-sysdir="/usr/share/games/$game"
-usrdir="$HOME/.$game"
-firstRun=false
-
-declare -A symlinks=([tie.cd]="" [imuse.exe]="tiecd")
-declare -A copies=([imuse.ini]="tiecd" [*.tfr]="tiecd")
-
-
-if [ ! -d "$usrdir" ]; then
-    mkdir -p "$usrdir"
-    firstRun=true
+if [ ! -f "/usr/lib/libtiefighter.sh" ]; then
+  echo "Can't load /usr/lib/libtiefighter.sh" >&2
+  exit 1
+else
+  . "/usr/lib/libtiefighter.sh"
 fi
 
-for f in "${!symlinks[@]}"; do
-    mkdir -p "$usrdir/${symlinks[$f]}"
-    cp -urs "$sysdir/"$f "$usrdir/${symlinks[$f]}" 2> /dev/null
-done
+tiefighter.script.game() {
+  local batchScript='
+    mount -u c
+    mount c "'"$TF_MOUNTPOINT"'"
+    mount -u d
+    mount d "'"$TF_DISK"'" -t cdrom
+  '
+  if tiefighter.firstRun; then
+    batchScript+='
+      c:
+      cd \
+      imuse.exe
+    '
+  fi
+  batchScript+="
+    d:
+    cd \\
+    tie.exe $@
+    exit
+  "
 
-for f in "${!copies[@]}"; do
-    mkdir -p "$usrdir/${copies[$f]}"
-    cp -nr "$sysdir/"$f "$usrdir/${copies[$f]}"  2> /dev/null
-done
+  dosbox -conf "$TF_DOSBOX_CONF" -exit -c "$batchScript"
+}
 
-dosboxMainConfig="$(dosbox -printconf)"
-dosboxConfigBaseName="""$(basename "$dosboxMainConfig")"""
-
-if [ ! -e "$usrdir/$dosboxConfigBaseName" ]; then
-    cp "$dosboxMainConfig" "$usrdir/$dosboxConfigBaseName"
-fi
-
-batchScript="""
-mount -u c
-mount -u d
-mount c "$usrdir"
-mount -t cdrom d "$sysdir"
-"""
-
-if [ "$1" = "--setup" ] || $firstRun; then
-    batchScript+="""
-c:
-cd \\tiecd
-imuse.exe
-"""
-fi
-
-if [ "$1" != "--setup" ]; then
-    batchScript+="""
-d:
-cd \\
-tie.exe
-"""
-fi
-
-batchScript+="exit"
-
-dosbox -conf "$usrdir/$dosboxConfigBaseName" -c "$batchScript" -exit
+tiefighter.run tiefighter.script.game "$@"

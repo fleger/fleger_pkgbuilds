@@ -10,6 +10,4 @@ Type=Application
 Terminal=false
 Icon=tiefighter
 Exec=tiefighter
-Categories=Application;Game;Simulation;
-
-
+Categories=Game;Simulation;
