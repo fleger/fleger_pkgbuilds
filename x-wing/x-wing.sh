@@ -1,61 +1,32 @@
 #! /bin/bash
 
-shopt -s extglob
-
-game="x-wing"
-sysdir="/usr/share/games/$game"
-usrdir="$HOME/.$game"
-firstRun=false
-
-declare -A symlinks=([!(topace5.plt|setmuse.ini|landru.cfg|options.cfg)]="xwingcd")
-declare -A copies=([topace5.plt setmuse.ini landru.cfg options.cfg]="xwingcd")
-
-
-if [ ! -d "$usrdir" ]; then
-    mkdir -p "$usrdir"
-    firstRun=true
+if [ ! -f "/usr/lib/libx-wing.sh" ]; then
+  echo "Can't load /usr/lib/libx-wing.sh" >&2
+  exit 1
+else
+  . "/usr/lib/libx-wing.sh"
 fi
 
-for f in "${!symlinks[@]}"; do
-    mkdir -p "$usrdir/${symlinks[$f]}"
-    cp -urs "$sysdir/"$f "$usrdir/${symlinks[$f]}" 2> /dev/null
-done
+x-wing.script.game() {
+  local batchScript='
+    mount -u c
+    mount c "'"$XW_MOUNTPOINT"'"
+    mount -u d
+    mount d "'"$XW_DISK"'" -t cdrom
+    c:
+    cd \
+  '
+  if x-wing.firstRun; then
+    batchScript+='
+      install.exe
+    '
+  fi
+  batchScript+="
+    bwing.exe $@
+    exit
+  "
 
-for f in "${!copies[@]}"; do
-    mkdir -p "$usrdir/${copies[$f]}"
-    cp -nr "$sysdir/"$f "$usrdir/${copies[$f]}"   2> /dev/null
-done
+  dosbox -conf "$XW_DOSBOX_CONF" -exit -c "$batchScript"
+}
 
-dosboxMainConfig="$(dosbox -printconf)"
-dosboxConfigBaseName="""$(basename "$dosboxMainConfig")"""
-
-if [ ! -e "$usrdir/$dosboxConfigBaseName" ]; then
-    cp "$dosboxMainConfig" "$usrdir/$dosboxConfigBaseName"
-fi
-
-batchScript="""
-mount -u c
-mount -u d
-mount -t cdrom d "$sysdir"
-mount c "$usrdir"
-"""
-
-if [ "$1" = "--setup" ] || $firstRun; then
-    batchScript+="""
-c:
-cd \\xwingcd
-install.exe
-"""
-fi
-
-if [ "$1" != "--setup" ]; then
-    batchScript+="""
-c:
-cd \\xwingcd
-bwing.exe
-"""
-fi
-
-batchScript+="exit"
-
-dosbox -conf "$usrdir/$dosboxConfigBaseName" -c "$batchScript" -exit
+x-wing.run x-wing.script.game "$@"
