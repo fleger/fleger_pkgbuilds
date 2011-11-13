@@ -58,7 +58,7 @@ package() {
   done
 
   # imuse.exe must be present on both diskDir and dataDir
-  ln -s "${diskDir}/imuse.exe" "${dataDir}/imuse.exe"
+  ln -s "/usr/share/games/${pkgname}/disk/imuse.exe" "${dataDir}/imuse.exe"
 
   # Use DOS32/A instead of DOS4/GW
   ln -s "/usr/share/dos32a/dos32a.exe" "${diskDir}/dos4gw.exe"
