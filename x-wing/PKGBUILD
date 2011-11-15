@@ -1,8 +1,8 @@
 # Maintainer: Florian Léger <florian6 dot leger at laposte dot net>
 
 pkgname=x-wing
-pkgver=1.0
-pkgrel=3
+pkgver=1.5
+pkgrel=1
 pkgdesc="Space flight and combat simulator set in the Star Wars universe (uses DOSBox)"
 arch=("any")
 depends=("dosbox" "modfs-git")
