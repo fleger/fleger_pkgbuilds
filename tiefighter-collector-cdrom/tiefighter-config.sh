@@ -7,16 +7,18 @@ else
   . "/usr/lib/libtiefighter.sh"
 fi
 
+readonly SCRIPT_NAME="${0}"
+
 tiefighter.script.config() {
   local batchScript="
     mount -u c
-    mount c \"$TF_MOUNTPOINT\"
+    mount c \"${APP_DIR}\"
     c:
     cd \\
     imuse.exe $@
     exit
   "
-  dosbox -conf "$TF_DOSBOX_CONF" -exit -c "$batchScript"
+  SDL_VIDEO_X11_WMCLASS=$(basename "${SCRIPT_NAME%.*}") dosbox -conf "${DOSBOX_CONF}" -exit -c "${batchScript}"
 }
 
 tiefighter.run tiefighter.script.config "$@"

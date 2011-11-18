@@ -7,12 +7,14 @@ else
   . "/usr/lib/libx-wing.sh"
 fi
 
+readonly SCRIPT_NAME="${0}"
+
 x-wing.script.game() {
   local batchScript='
     mount -u c
-    mount c "'"$XW_MOUNTPOINT"'"
+    mount c "'"${APP_DIR}"'"
     mount -u d
-    mount d "'"$XW_DISK"'" -t cdrom
+    mount d "'"${APP_DISK}"'" -t cdrom
     c:
     cd \
   '
@@ -26,7 +28,7 @@ x-wing.script.game() {
     exit
   "
 
-  dosbox -conf "$XW_DOSBOX_CONF" -exit -c "$batchScript"
+  SDL_VIDEO_X11_WMCLASS=$(basename "${SCRIPT_NAME%.*}") dosbox -conf "${DOSBOX_CONF}" -exit -c "${batchScript}"
 }
 
 x-wing.run x-wing.script.game "$@"

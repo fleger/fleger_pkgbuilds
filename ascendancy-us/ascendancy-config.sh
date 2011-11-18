@@ -7,17 +7,20 @@ else
   . "/usr/lib/libascendancy.sh"
 fi
 
+readonly SCRIPT_NAME="${0}"
+
 ascendancy.script.config() {
   local batchScript='
     mount -u c
-    mount c "'"$ASCEND_MOUNTPOINT"'"
+    mount c "'"${APP_DIR}"'"
     c:
     cd \
     uvconfig -gen
     setsound
     exit
   '
-  dosbox -conf "$ASCEND_DOSBOX_CONF" -exit -c "$batchScript"
+
+  SDL_VIDEO_X11_WMCLASS=$(basename "${SCRIPT_NAME%.*}") dosbox -conf "${DOSBOX_CONF}" -exit -c "${batchScript}"
 }
 
 ascendancy.run ascendancy.script.config "$@"

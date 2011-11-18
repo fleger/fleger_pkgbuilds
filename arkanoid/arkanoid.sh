@@ -7,17 +7,19 @@ else
   . "/usr/lib/libarkanoid.sh"
 fi
 
+readonly SCRIPT_NAME="${0}"
+
 arkanoid.script.game() {
   local batchScript="
     mount -u c
-    mount c \"$ARKANOID_MOUNTPOINT\"
+    mount c \"${APP_DIR}\"
     c:
     cd \\
     arkanoid.com $@
     exit
   "
 
-  dosbox -conf "$ARKANOID_DOSBOX_CONF" -exit -c "$batchScript"
+  SDL_VIDEO_X11_WMCLASS=$(basename "${SCRIPT_NAME%.*}") dosbox -conf "${DOSBOX_CONF}" -exit -c "${batchScript}"
 }
 
 arkanoid.run arkanoid.script.game "$@"

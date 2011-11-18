@@ -1,8 +1,9 @@
-darkforces.run() {
-  local APP_NAME="darkforces"
+tiefighter.run() {
+  local APP_NAME="tiefighter"
   local TMPDIR="${TMPDIR:-/tmp}"
   local RW_BRANCH="${XDG_DATA_HOME}/${APP_NAME}"
   local APP_DIR="${TMPDIR}/${APP_NAME}-tmp-${USER}"
+  local APP_DISK="/usr/share/games/${APP_NAME}/disk"
   local BRANCHES_D="/etc/${APP_NAME}.d"
   local DOSBOX_CONF="${XDG_CONFIG_HOME}/${APP_NAME}/$(basename $(dosbox -printconf))"
   local __firstRun=false
@@ -25,6 +26,6 @@ darkforces.run() {
   rmdir "${APP_DIR}"
 }
 
-darkforces.firstRun() {
+tiefighter.firstRun() {
   "${__firstRun}"
 }

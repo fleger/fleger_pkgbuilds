@@ -1,21 +1,30 @@
 arkanoid.run() {
-  local ARKANOID_USER_DATA="$XDG_DATA_HOME/arkanoid"
-  local ARKANOID_RW="$ARKANOID_USER_DATA/rw"
-  local ARKANOID_MOUNTPOINT="$ARKANOID_USER_DATA/union"
-  local ARKANOID_BRANCHES_D="/etc/arkanoid.d"
-  local ARKANOID_DOSBOX_CONF="$XDG_CONFIG_HOME/arkanoid/$(basename $(dosbox -printconf))"
-  
-  if [ ! -f "$ARKANOID_DOSBOX_CONF" ]; then
-    install -Dm644 $(dosbox -printconf) "$ARKANOID_DOSBOX_CONF"
+  local APP_NAME="arkanoid"
+  local TMPDIR="${TMPDIR:-/tmp}"
+  local RW_BRANCH="${XDG_DATA_HOME}/${APP_NAME}"
+  local APP_DIR="${TMPDIR}/${APP_NAME}-tmp-${USER}"
+  local BRANCHES_D="/etc/${APP_NAME}.d"
+  local DOSBOX_CONF="${XDG_CONFIG_HOME}/${APP_NAME}/$(basename $(dosbox -printconf))"
+  local __firstRun=false
+
+  if [ ! -f "${DOSBOX_CONF}" ]; then
+    install -Dm644 $(dosbox -printconf) "${DOSBOX_CONF}"
   fi
 
-  mkdir -p "$ARKANOID_MOUNTPOINT" "$ARKANOID_RW" &&
-  ARKANOID_RW="$ARKANOID_RW" modfs -o cow -o "uid=$UID" -o "gid=${GROUPS[0]}" "$ARKANOID_BRANCHES_D" "$ARKANOID_MOUNTPOINT" &&
-  cd "$ARKANOID_MOUNTPOINT" &&
+  if [ ! -d "${RW_BRANCH}" ]; then
+    __firstRun=true
+  fi
+
+  mkdir -p "${RW_BRANCH}" "${APP_DIR}" &&
+  RW_BRANCH="${RW_BRANCH}" modfs -o cow -o "uid=${UID}" -o "gid=${GROUPS[0]}" "${BRANCHES_D}" "${APP_DIR}" &&
+  cd "${APP_DIR}" &&
   "$@"
 
-  cd /
-  fusermount -u "$ARKANOID_MOUNTPOINT"
+  cd / &&
+  fusermount -u "${APP_DIR}" &&
+  rmdir "${APP_DIR}"
 }
 
-
+arkanoid.firstRun() {
+  "${__firstRun}"
+}

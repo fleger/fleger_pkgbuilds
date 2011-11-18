@@ -7,19 +7,21 @@ else
   . "/usr/lib/librebelassault.sh"
 fi
 
+readonly SCRIPT_NAME="${0}"
+
 rebelassault.script.game() {
   local batchScript="
     mount -u c
-    mount c \"$RA_RW\"
+    mount c \"${APP_DIR}\"
     mount -u d
-    mount d \"$RA_DISK\" -t cdrom
+    mount d \"${APP_DISK}\" -t cdrom
     d:
     cd \\
     rebel.exe $@
     exit
   "
 
-  dosbox -conf "$RA_DOSBOX_CONF" -exit -c "$batchScript"
+  SDL_VIDEO_X11_WMCLASS=$(basename "${SCRIPT_NAME%.*}") dosbox -conf "${DOSBOX_CONF}" -exit -c "${batchScript}"
 }
 
 rebelassault.run rebelassault.script.game "$@"

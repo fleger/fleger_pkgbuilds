@@ -7,10 +7,12 @@ else
   . "/usr/lib/libdarkforces.sh"
 fi
 
+readonly SCRIPT_NAME="${0}"
+
 darkforces.script.game() {
   local batchScript='
     mount -u c
-    mount c "'"$DF_MOUNTPOINT"'"
+    mount c "'"${APP_DIR}"'"
     c:
   '
   if darkforces.firstRun; then
@@ -29,7 +31,7 @@ darkforces.script.game() {
     exit
   "
 
-  dosbox -conf "$DF_DOSBOX_CONF" -exit -c "$batchScript"
+  SDL_VIDEO_X11_WMCLASS=$(basename "${SCRIPT_NAME%.*}") dosbox -conf "${DOSBOX_CONF}" -exit -c "${batchScript}"
 }
 
 darkforces.run darkforces.script.game "$@"

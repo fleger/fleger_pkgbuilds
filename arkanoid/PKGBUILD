@@ -1,7 +1,7 @@
 # Maintainer: Florian Léger <florian6 dot leger at laposte dot net>
 pkgname=arkanoid
 pkgver=1.0
-pkgrel=3
+pkgrel=1
 pkgdesc="Breakout game (uses DOSBox)"
 arch=(any)
 url="http://en.wikipedia.org/wiki/Arkanoid"
@@ -12,27 +12,28 @@ source=("arkanoid.zip::http://files.abandonia.com/download.php?game=Arkanoid&sec
         "${pkgname}.desktop"
         "${pkgname}.png"
         "lib${pkgname}.sh"
-        "99-data.conf"
+        "99-base.conf"
         "01-user.conf")
 md5sums=('3c75be3176824dee1e2873c3a899f1b0'
-         'aaa8eab6ae9ab15414179b14f0524fdb'
+         '5ad0fff2d5c9049c8d3a8c08e64dfca2'
          '362c73cdc1df7f7c5e7072bdb8953683'
          '6acd300073e4a21f968ec5d90e0eacfe'
-         '019d59770031ae7582faf245eb323713'
-         '326053ac183cf662c682154455343b54'
-         '19f59f4af9aee97ac9dc677a6eb98f6f')
+         'e049977cc130d82254022e20a74f1fbd'
+         '29850c5d22a7ed3fc28271de658883e7'
+         'c1549ac03b636273288afaf4046f3ad0')
+install="${pkgname}.install"
 
 package() {
   cd "${srcdir}"
 
-  install -Dm644 ARKANOID.COM "${pkgdir}/usr/share/games/${pkgname}/data/arkanoid.com"
-  install -Dm644 ARKANOID.DAT "${pkgdir}/usr/share/games/${pkgname}/data/arkanoid.dat"
+  install -Dm644 ARKANOID.COM "${pkgdir}/usr/share/games/${pkgname}/base/arkanoid.com"
+  install -Dm644 ARKANOID.DAT "${pkgdir}/usr/share/games/${pkgname}/base/arkanoid.dat"
 
   install -Dm644 "${pkgname}.desktop" "${pkgdir}/usr/share/applications/${pkgname}.desktop"
   install -Dm755 "${pkgname}.sh" "${pkgdir}/usr/bin/${pkgname}"
   install -Dm644 "lib${pkgname}.sh" "${pkgdir}/usr/lib/lib${pkgname}.sh"
   install -Dm644 "${pkgname}.png" "${pkgdir}/usr/share/pixmaps/${pkgname}.png"
 
-  install -Dm644 "99-data.conf" "${pkgdir}/etc/${pkgname}.d/99-data.conf"
+  install -Dm644 "99-base.conf" "${pkgdir}/etc/${pkgname}.d/99-base.conf"
   install -Dm644 "01-user.conf" "${pkgdir}/etc/${pkgname}.d/01-user.conf"
 }
