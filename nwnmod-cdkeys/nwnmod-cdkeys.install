@@ -1,3 +1,0 @@
-post_install() {
-  echo "You can put your Neverwinter Nights CD keys in /opt/nwnmod-cdkeys/nwncdkey.ini." 
-}
