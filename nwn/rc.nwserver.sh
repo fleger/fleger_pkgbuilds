@@ -3,9 +3,10 @@
 . /etc/rc.conf
 . /etc/rc.d/functions
 
-NWSERVER_ARGS=()
 NWSERVER_SAVE_SLOT=2
 NWSERVER_SAVE_NAME=shutdown
+NWSERVER_SAVE_TIMEOUT=10
+NWSERVER_ARGS=""
 
 . /etc/conf.d/nwserver
 
@@ -13,22 +14,22 @@ _logDir="/var/log/nwserver"
 _runDir="/var/run/nwserver"
 _srvDir="/srv/nwn"
 _expectScript=$(cat << EOS
+set timeout "$NWSERVER_SAVE_TIMEOUT"
+
+proc exitServer {} {
+  send "exit\r"
+  expect "Server: Exiting..." {return 0}
+  return 1
+}
+
 spawn attachtty "$_runDir/socket"
-send "saveandexit $NWSERVER_SAVE_SLOT $NWSERVER_SAVE_NAME\r"
+send "forcesave $NWSERVER_SAVE_SLOT $NWSERVER_SAVE_NAME\r"
 expect {
-  "Server: Exiting..." {
-    exit 0
+  "Server: Save complete" {
+    exit [exitServer]
   }
   default {
-    send "exit\r"
-    expect {
-      "Server: Exiting..." {
-        exit 0
-      }
-      default {
-        exit 1
-      }
-    }
+    exit [exitServer]
   }
 }
 EOS
@@ -43,7 +44,7 @@ case "$1" in
         mkdir -p "$_runDir"
         chown nwserver:nwserver "$_runDir"
       fi
-      su nwserver -c "RW_BRANCH=$_srvDir detachtty --dribble-file $_logDir/server_stdout.log --log-file $_logDir/detachtty.log --pid-file $_runDir/server.pid $_runDir/socket /usr/bin/nwserver ${NWSERVER_ARGS[@]}" &&
+      su nwserver -c "RW_BRANCH=$_srvDir detachtty --dribble-file $_logDir/server_stdout.log --log-file $_logDir/detachtty.log --pid-file $_runDir/server.pid $_runDir/socket /usr/bin/nwserver $NWSERVER_ARGS" &&
       add_daemon nwserver &&
       stat_done || stat_fail
     else

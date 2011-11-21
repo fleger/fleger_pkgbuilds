@@ -37,8 +37,8 @@ md5sums=('8222401efe25235b56d01b38ae880b5b'
          'ce95616e9313257b392adcd0d088928a'
          '36321803242e82117eb2cc8374414a14'
          '15b83bff4b350d2c95d92d9aa367bd92'
-         '911c62cd93f4fbcee364649b191abb25'
-         '116db189d4000036506f638baa11bb91'
+         'de5b56abdea1e914d378fddc9573f168'
+         '0192e0032c79d654713764f00f80f443'
          '9733e7318721c446f0d714a029f57ea7'
          'be90448c6129d12a682ca567e67a7b54')
 noextract=("nwclient129.tar.gz" "English_linuxclient${pkgver//.}_orig.tar.gz")
