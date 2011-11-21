@@ -40,7 +40,6 @@ case "$1" in
   start)
     stat_busy "Starting $_daemonName"
     if [[ ! -f "$_runDir/server.pid" ]]; then
-      cd "$_srvDir"
       if [[ ! -d "$_runDir" ]]; then
         mkdir -p "$_runDir"
         chown nwserver:nwserver "$_runDir"
@@ -79,7 +78,7 @@ case "$1" in
     $0 start
     ;;
   status)
-    stat_busy 'Checking $_daemonName status'
+    stat_busy "Checking $_daemonName status"
     ck_status nwserver
     ;;
   *)
