@@ -1,8 +1,7 @@
 nwn.run() {
   local -r APP_NAME="nwn"
   local -r TMPDIR="${TMPDIR:-/tmp}"
-  local RW_BRANCH="${RW_BRANCH}"
-  : ${RW_BRANCH:="${XDG_DATA_HOME}/${APP_NAME}"}
+  local RW_BRANCH="${RW_BRANCH:-${XDG_DATA_HOME}/${APP_NAME}}"
   local -r APP_DIR="${TMPDIR}/${APP_NAME}-tmp-${USER}"
   local -r CONF_DIR="/etc/${APP_NAME}"
   local -r BRANCHES_D="/etc/${APP_NAME}/branches.d"
@@ -13,7 +12,7 @@ nwn.run() {
   fi
 
   mkdir -p "${RW_BRANCH}" "${APP_DIR}" &&
-  { mount | grep "${APP_DIR}" || RW_BRANCH="${RW_BRANCH}" modfs -o cow -o "uid=${UID}" -o "gid=${GROUPS[0]}" "${BRANCHES_D}" "${APP_DIR}"; } &&
+  { findmnt "${APP_DIR}" || RW_BRANCH="${RW_BRANCH}" modfs -o cow -o "uid=${UID}" -o "gid=${GROUPS[0]}" "${BRANCHES_D}" "${APP_DIR}"; } &&
   cd "${APP_DIR}" &&
   "$@"
 
