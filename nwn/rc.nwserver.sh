@@ -10,6 +10,7 @@ NWSERVER_ARGS=""
 
 . /etc/conf.d/nwserver
 
+_daemonName="Neverwinter Nights server"
 _logDir="/var/log/nwserver"
 _runDir="/var/run/nwserver"
 _srvDir="/srv/nwn"
@@ -37,14 +38,14 @@ EOS
 
 case "$1" in
   start)
-    stat_busy "Starting nwserver"
+    stat_busy "Starting $_daemonName"
     if [[ ! -f "$_runDir/server.pid" ]]; then
       cd "$_srvDir"
       if [[ ! -d "$_runDir" ]]; then
         mkdir -p "$_runDir"
         chown nwserver:nwserver "$_runDir"
       fi
-      su nwserver -c "RW_BRANCH=$_srvDir detachtty --dribble-file $_logDir/server_stdout.log --log-file $_logDir/detachtty.log --pid-file $_runDir/server.pid $_runDir/socket /usr/bin/nwserver $NWSERVER_ARGS" &&
+      su nwserver -c "RW_BRANCH=$_srvDir detachtty --dribble-file $_logDir/server_stdout.log --log-file $_logDir/detachtty.log --pid-file $_runDir/server.pid $_runDir/socket /usr/bin/nwserver $NWSERVER_ARGS -interactive" &&
       add_daemon nwserver &&
       stat_done || stat_fail
     else
@@ -52,7 +53,7 @@ case "$1" in
     fi
     ;;
   stop)
-    stat_busy "Stopping nwserver"
+    stat_busy "Stopping $_daemonName"
     if [[ ! -f "$_runDir/server.pid" ]]; then
       # nwserver died
       rm_daemon nwserver
@@ -78,7 +79,7 @@ case "$1" in
     $0 start
     ;;
   status)
-    stat_busy 'Checking nwserver status'
+    stat_busy 'Checking $_daemonName status'
     ck_status nwserver
     ;;
   *)
