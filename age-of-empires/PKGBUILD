@@ -38,6 +38,9 @@ shopt -s nocaseglob
 build() {
   # Icon
   convert "${CD_DIR}/empires.ico" "${srcdir}/${_appname}.png"
+  
+  # Patch
+  cd "${srcdir}"
   cabextract -L -d . aoepatch-sip.exe
   cabextract -L -d . aoepatch-egf.exe
 }
