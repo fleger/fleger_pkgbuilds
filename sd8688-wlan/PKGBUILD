@@ -3,7 +3,7 @@
 pkgname=sd8688-wlan
 pkgver=26609.P64
 epoch=1
-pkgrel=2
+pkgrel=3
 pkgdesc="WLAN driver for Marvell SD8688 WiFi/BlueTooth chipset."
 arch=('i686' 'x86_64' 'arm')
 url='http://plugcomputer.org/plugwiki/index.php/Setting_GuruPlug_to_be_a_stable_WiFi_Client'
@@ -31,8 +31,8 @@ build() {
 
   make KERNELDIR="/lib/modules/${_kernver}/build" CROSS_COMPILE="" ARCH=$bArch
 
-  gzip -9 "sd8xxx.ko"
-  gzip -9 "mcypt.ko"
+  gzip -f9 "sd8xxx.ko"
+  gzip -f9 "mcypt.ko"
 }
 
 package() {

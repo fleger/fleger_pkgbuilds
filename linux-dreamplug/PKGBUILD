@@ -4,16 +4,16 @@ pkgbase="linux-dreamplug"
 pkgname=("linux-dreamplug" "linux-dreamplug-headers")       # Build kernel with a different name
 _kernelname=${pkgname#linux}
 _basekernel=3.1
-pkgver=${_basekernel}
+pkgver=${_basekernel}.2
 pkgrel=1
 arch=('arm')
 url="http://www.kernel.org/"
 license=('GPL2')
 makedepends=('xmlto' 'docbook-xsl' 'uboot-mkimage')
 options=('!strip')
-_alarmcommit="ad11a72d8d52043b42fc6a0b2995d1d02ac3b375"
+_alarmcommit="b27b059dbf765009304c148d9d68093e9f60a178"
 source=("ftp://ftp.kernel.org/pub/linux/kernel/v3.x/linux-${_basekernel}.tar.bz2"
-        #"ftp://ftp.kernel.org/pub/linux/kernel/v3.x/patch-${pkgver}.bz2"
+        "ftp://ftp.kernel.org/pub/linux/kernel/v3.x/patch-${pkgver}.bz2"
         "https://github.com/archlinuxarm/PKGBUILDs/raw/${_alarmcommit}/core/linux/archlinuxarm.patch"
         "https://github.com/archlinuxarm/PKGBUILDs/raw/${_alarmcommit}/core/linux/aufs3-kbuild.patch"
         "https://github.com/archlinuxarm/PKGBUILDs/raw/${_alarmcommit}/core/linux/aufs3-base.patch"
@@ -21,25 +21,21 @@ source=("ftp://ftp.kernel.org/pub/linux/kernel/v3.x/linux-${_basekernel}.tar.bz2
         "https://github.com/archlinuxarm/PKGBUILDs/raw/${_alarmcommit}/core/linux/aufs3-git-extras.patch"
         "https://github.com/archlinuxarm/PKGBUILDs/raw/${_alarmcommit}/core/linux/config"
         "https://github.com/archlinuxarm/PKGBUILDs/raw/${_alarmcommit}/core/linux/change-default-console-loglevel.patch"
-        "https://github.com/archlinuxarm/PKGBUILDs/raw/${_alarmcommit}/core/linux/dib0700-fix.patch"
         "https://github.com/archlinuxarm/PKGBUILDs/raw/${_alarmcommit}/core/linux/usb-add-reset-resume-quirk-for-several-webcams.patch"
-        "https://github.com/archlinuxarm/PKGBUILDs/raw/${_alarmcommit}/core/linux/md-raid10-fix-bug-when-activating-a-hot-spare.patch"
         "http://sheeva.with-linux.com/sheeva/3/${_basekernel}/${pkgver}/source/linux-3.0-SDIO-micro-AP.patch"
         "http://sheeva.with-linux.com/sheeva/3/${_basekernel}/${pkgver}/source/mvsdio-1-2.6.30.patch"
         "http://sheeva.with-linux.com/sheeva/3/${_basekernel}/${pkgver}/source/mvsdio-2.patch"
         "http://sheeva.with-linux.com/sheeva/3/${_basekernel}/${pkgver}/source/linux-3.0.4-LIBERTAS-WEXT_PRIV.patch")
-
 md5sums=('8d43453f8159b2332ad410b19d86a931'
-         '2b2b459c34e55e68fc53ac30766ed139'
+         '7487d8e6f00c077f6e15d6f4f9947c30'
+         'e930a6fee04e63514d2c366c94519bb2'
          '3f64ed9d71499fe9293dc671f4e4087e'
          '29628745258df910abfb8cb24ca3ccd9'
          'c9e6e8bb0774a89f7f9bd30a13be7532'
          '55b04499a4578e586cf5a4d0b69fc5aa'
-         'e1720c5ca9bbdc4e0b0760b05d66ef74'
+         '22fabef7755c15e0dea2f879db08232f'
          '9d3c56a4b999c8bfbd4018089a62f662'
-         'abcd7b4b5676deed0114684e555f7c0f'
          'd00814b57448895e65fbbc800e8a58ba'
-         '5967b6e2c3bc61b9718716d95ccfdc22'
          '915a9380e205d4ca8c179c745831c3e0'
          'e655da31381a7ca7347e610912d9c610'
          '59664af0589cba9d3e18d6d1aac59833'
@@ -49,33 +45,23 @@ build() {
   cd "${srcdir}/linux-${_basekernel}"
 
   # Add upstream patch
-  #patch -p1 -i "${srcdir}/patch-${pkgver}"
+  patch -p1 -i "${srcdir}/patch-${pkgver}"
 
   # Add latest fixes from stable queue, if needed
   # http://git.kernel.org/?p=linux/kernel/git/stable/stable-queue.git
-
-  # Fix dib0700 driver
-  # http://git.linuxtv.org/pb/media_tree.git/shortlog/refs/heads/for_v3.0
-  # FS#25939
-  patch -Np1 -i "${srcdir}/dib0700-fix.patch"
 
   # Add the USB_QUIRK_RESET_RESUME for several webcams
   # FS#26528
   patch -Np1 -i "${srcdir}/usb-add-reset-resume-quirk-for-several-webcams.patch"
 
-  # Fix RAID10 hot spare activation (critical)
-  # https://git.kernel.org/?p=linux/kernel/git/stable/stable-queue.git;a=blob_plain;f=queue-3.1/md-raid10-fix-bug-when-activating-a-hot-spare.patch;h=880849db5b7089b523f72c4d67a473e5330037fc;hb=HEAD
-  # FS#26767
-  patch -Np1 -i "${srcdir}/md-raid10-fix-bug-when-activating-a-hot-spare.patch"
-
   # Add Arch Linux ARM patch for ARMv5te plug computers
   patch -Np1 -i "${srcdir}/archlinuxarm.patch"
 
   # Add AUFS3 patches
-  patch -Np1 -i ${srcdir}/aufs3-kbuild.patch
-  patch -Np1 -i ${srcdir}/aufs3-base.patch
-  patch -Np1 -i ${srcdir}/aufs3-standalone.patch
-  patch -Np1 -i ${srcdir}/aufs3-git-extras.patch
+  patch -Np1 -i "${srcdir}/aufs3-kbuild.patch"
+  patch -Np1 -i "${srcdir}/aufs3-base.patch"
+  patch -Np1 -i "${srcdir}/aufs3-standalone.patch"
+  patch -Np1 -i "${srcdir}/aufs3-git-extras.patch"
 
   # Add Sheeva With-Linux patches
   patch -Np1 -i "${srcdir}/linux-3.0-SDIO-micro-AP.patch"
