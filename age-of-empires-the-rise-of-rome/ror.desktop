@@ -1,0 +1,13 @@
+[Desktop Entry]
+Name=Age Of Empires: The Rise Of Rome
+GenericName=History-based real-time strategy computer game
+GenericName[fr]=Jeu historique de stratégie en temps réel
+Encoding=UTF-8
+Version=1.0
+Type=Application
+Terminal=false
+Icon=ror
+Exec=ror
+Categories=Game;StrategyGame;
+
+
