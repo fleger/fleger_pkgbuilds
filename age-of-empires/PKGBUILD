@@ -1,0 +1,97 @@
+# Maintainer: Florian Léger <florian6 dot leger at laposte dot net>
+
+# Package Options - Can be overwritten by the environment
+
+# CD_DIR: path where your Age Of Empires CD-ROM is mounted.
+# Note: both Standard and Gold editions are supported.
+: ${CD_DIR:="/media/sr0"}
+
+_appname="aoe"
+pkgname=age-of-empires
+pkgdesc="History-based real-time strategy computer game (uses Wine, CD-ROM required)"
+pkgver=1.0c
+pkgrel=1
+arch=(any)
+license=("custom")
+url="http://www.microsoft.com/games/empires/"
+depends=("modfs-git" "ttf-ms-fonts" "wine")
+makedepends=("imagemagick" "icoutils" "cabextract")
+source=("${_appname}.desktop"
+        "aoepatch-sip.exe::http://download.microsoft.com/download/aoe/Patch/1.0c/W9X/PT-BR/AOEPATCH.exe"
+        "aoepatch-egf.exe::http://download.microsoft.com/download/aoe/Patch/1.0c/W9X/EN-US/AOEPATCH.exe"
+        "lib${_appname}.sh"
+        "${_appname}.sh"
+        "01-user.conf"
+        "99-base.conf")
+md5sums=('496b7c9e1d970b4f09da72c7bb8a7330'
+         '1fc14f81f13383bbcdd06310ed39cb02'
+         'd70583332d80bb930b95eceea989ffa2'
+         '8cb0fb112023cd1da6d2917a2d386217'
+         '7e594a5c1aa04f39756f8f1f30a2b8fd'
+         'c1549ac03b636273288afaf4046f3ad0'
+         'ce7578afc93de8db25672c2011c7833a')
+install="${pkgname}.install"
+
+shopt -s extglob
+shopt -s nocaseglob
+
+build() {
+  # Icon
+  convert "${CD_DIR}/empires.ico" "${srcdir}/${_appname}.png"
+  cabextract -L -d . aoepatch-sip.exe
+  cabextract -L -d . aoepatch-egf.exe
+}
+
+package() {
+  local i
+
+  # Copy original resources
+  cd "${CD_DIR}/"
+
+  # License
+  for i in cluf.*; do
+    install -Dm644 "${i}" "${pkgdir}/usr/share/licenses/${pkgname}/${i,,*}"
+  done
+
+  # Fonts
+  for i in system/fonts/copr*.ttf; do
+    install -Dm644 "${i}" "${pkgdir}/usr/share/fonts/TTF/$(basename ${i,,*})"
+  done
+
+  # Docs
+  local docsDir="docs"                                                  # Standard Edition
+  [ -d "docs/AgeOfEmp" ] && docsDir="docs/AgeOfEmp"                     # Gold Edition
+  for i in "${docsDir}/"*.doc; do
+    install -Dm644 "${i}" "${pkgdir}/usr/share/doc/${_appname}/$(basename ${i,,*})"
+  done
+
+  # Game
+  cd game
+  for i in "aelaunch.dll" "aoehlp.dll" "empires.hlp" "mapdef_1.bmp" "avi/"!(introx.avi) \
+           "campaign/"*.cpn  "data/"* "help/"* "learn/"* "savegame/"* "scenario/"* "sound/"!(x*.mid); do
+    install -Dm644 "${i}" "${pkgdir}/usr/share/games/${_appname}/base/${i,,*}"
+  done
+
+  # Guess locale
+  local -A localeIDs=([3082]=spn [1040]=itl [1046]=bra [1033]=eng [1031]=ger [1036]=frn)
+  local locale=${localeIDs[$(wrestool -l language.dll | sed -n -r -e '1s/.*--language=([0-9]+).*/\1/p')]}
+  msg2 "Detected locale: ${locale}"
+
+  # Patch
+  install -Dm644 "${srcdir}/empires.exe" "${pkgdir}/usr/share/games/${_appname}/base/empires.exe"
+  install -Dm644 "${srcdir}/language.${locale}" "${pkgdir}/usr/share/games/${_appname}/base/language.dll"
+
+  # Modfs
+  install -Dm644 "${srcdir}/01-user.conf" "${pkgdir}/etc/${_appname}.d/01-user.conf"
+  install -Dm644 "${srcdir}/99-base.conf" "${pkgdir}/etc/${_appname}.d/99-base.conf"
+  
+  # .desktop 
+  install -Dm644 "${srcdir}/${_appname}.desktop" "${pkgdir}/usr/share/applications/${_appname}.desktop"
+  
+  # Icon
+  install -Dm644 "${srcdir}/${_appname}-5.png" "${pkgdir}/usr/share/pixmaps/${_appname}.png"
+  
+  # Shell scripts
+  install -Dm644 "${srcdir}/lib${_appname}.sh" "${pkgdir}/usr/lib/lib${_appname}.sh"
+  install -Dm755 "${srcdir}/${_appname}.sh" "${pkgdir}/usr/bin/${_appname}"
+}
