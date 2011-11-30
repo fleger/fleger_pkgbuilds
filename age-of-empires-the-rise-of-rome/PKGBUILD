@@ -8,36 +8,43 @@
 
 _appname="ror"
 pkgname=age-of-empires-the-rise-of-rome
-pkgdesc="History-based real-time strategy computer game (uses Wine, CD-ROM required)"
+pkgdesc="Age Of Empires: The Rise Of Rome Expansion (uses Wine, CD-ROM required)"
 pkgver=1.0a
 pkgrel=1
 arch=(any)
 license=("custom")
 url="http://www.microsoft.com/games/aoeexpansion/"
 depends=("age-of-empires")
-makedepends=("imagemagick" "icoutils" "cabextract")
+makedepends=("icoutils" "cabextract")
 source=("${_appname}.desktop"
-        "http://download.microsoft.com/download/aoeror/Patch/1.0a/W9X/EN-US/aoepatch.exe"
+        "http://download.microsoft.com/download/aoeror/Patch/${pkgver}/W9X/EN-US/aoepatch.exe"
+        "${_appname}.reg.in"
         "${_appname}.sh"
-        "98-${_appname}.conf")
+        "98-${_appname}.conf"
+        "pkghelper.sh")
 md5sums=('e986c1e62e591a1421d7733f8d98420c'
          'd70583332d80bb930b95eceea989ffa2'
-         '9f9f99823cb9fb7c07489f98dd825751'
-         '5da368350b84b05a00c90784d844b330')
+         '32d0c4c5d632a8241cbd2226dfe57016'
+         'd1522b1d5ad36ea482334209d88a7c17'
+         '5da368350b84b05a00c90784d844b330'
+         '6d9247ed000249c8feb68a3c03dbd916')
 
 shopt -s nocaseglob
 
 build() {
-  # Icon
-  convert "${CD_DIR}/aoex.ico" "${srcdir}/${_appname}.png"
-  
   # Patch
   cd "${srcdir}"
   cabextract -L -d . "aoepatch.exe"
+
+  # Icon
+  wrestool -x --type="group_icon" "empiresx.exe" > "${_appname}.ico"
+  icotool -x "${_appname}.ico"
 }
 
 package() {
   local i
+
+  . "${srcdir}/pkghelper.sh"
 
   # Copy original resources
   cd "${CD_DIR}/"
@@ -56,9 +63,9 @@ package() {
 
   # Game
   cd game
-  for i in "aelaunch.dll" "avi/introx.avi" \
+  for i in "aelaunch.dll" \
            "campaign/"*.cpx  "data2/"* "sound/x"*.mid; do
-    install -Dm644 "${i}" "${pkgdir}/usr/share/games/aoe/${_appname}/${i,,*}"
+    install -Dm644 "${i}" "${pkgdir}/usr/share/games/aoe/${_appname}/$(_tr ${i})"
   done
 
   install -Dm644 "langua_1.dll" "${pkgdir}/usr/share/games/aoe/${_appname}/languagex.dll"
@@ -66,6 +73,9 @@ package() {
   # Patch
   install -Dm644 "${srcdir}/empiresx.exe" "${pkgdir}/usr/share/games/aoe/${_appname}/empiresx.exe"
 
+  # Registry
+  install -Dm644 "${srcdir}/${_appname}.reg.in" "${pkgdir}/usr/share/games/aoe/${_appname}.reg.in"
+  
   # Modfs
   install -Dm644 "${srcdir}/98-${_appname}.conf" "${pkgdir}/etc/aoe.d/98-${_appname}.conf"
   
@@ -73,7 +83,7 @@ package() {
   install -Dm644 "${srcdir}/${_appname}.desktop" "${pkgdir}/usr/share/applications/${_appname}.desktop"
   
   # Icon
-  install -Dm644 "${srcdir}/${_appname}-5.png" "${pkgdir}/usr/share/pixmaps/${_appname}.png"
+  install -Dm644 "${srcdir}/${_appname}_1_36x36x8.png" "${pkgdir}/usr/share/pixmaps/${_appname}.png"
   
   # Shell scripts
   install -Dm755 "${srcdir}/${_appname}.sh" "${pkgdir}/usr/bin/${_appname}"

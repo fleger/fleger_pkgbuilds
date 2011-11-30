@@ -1,0 +1,15 @@
+REGEDIT4
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Microsoft Games\Age of Empires Expansion\1.0]
+"EXE Path"="@APP_DIR_WINE@"
+"InstallType"="1"
+"Launched"="0"
+"Version"="1.0a"
+"Zone"="http://www.zone.com/asp/aeepredir.asp"
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\DirectPlay\Applications\Age of Empires Expansion]
+"CommandLine"="lobby"
+"CurrentDirectory"="@APP_DIR_WINE@"
+"File"="EmpiresX.Exe"
+"Guid"="{8701C5C1-337B-11d2-839B-00609707F508}"
+"Path"="@APP_DIR_WINE@"
