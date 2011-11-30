@@ -1,4 +1,10 @@
 post_install() {
+  post_upgrade
+  echo '==> You should define the path where your Age Of Empires CD-ROM is mounted by running:'
+  echo '    $ echo "/path/where/the/cdrom/is/mounted" > "${XDG_CONFIG_HOME}/aoe/cdrom.conf"'
+}
+
+post_upgrade() {
   echo -n "Updating font cache... "
   fc-cache -f > /dev/null
   mkfontscale /usr/share/fonts/TTF
@@ -6,10 +12,6 @@ post_install() {
   echo "done."
 }
 
-post_upgrade() {
-  post_install $1
-}
-
 post_remove() {
-  post_install $1
+  post_upgrade
 }

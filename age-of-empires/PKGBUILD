@@ -15,38 +15,44 @@ arch=(any)
 license=("custom")
 url="http://www.microsoft.com/games/empires/"
 depends=("modfs-git" "ttf-ms-fonts" "wine")
-makedepends=("imagemagick" "icoutils" "cabextract")
+makedepends=("icoutils" "cabextract")
 source=("${_appname}.desktop"
-        "aoepatch-sip.exe::http://download.microsoft.com/download/aoe/Patch/1.0c/W9X/PT-BR/AOEPATCH.exe"
-        "aoepatch-egf.exe::http://download.microsoft.com/download/aoe/Patch/1.0c/W9X/EN-US/AOEPATCH.exe"
+        "aoepatch-sip.exe::http://download.microsoft.com/download/aoe/Patch/${pkgver}/W9X/PT-BR/AOEPATCH.exe"
+        "aoepatch-egf.exe::http://download.microsoft.com/download/aoe/Patch/${pkgver}/W9X/EN-US/AOEPATCH.exe"
         "lib${_appname}.sh"
         "${_appname}.sh"
+        "${_appname}.reg.in"
         "01-user.conf"
-        "99-base.conf")
+        "99-base.conf"
+        "pkghelper.sh")
 md5sums=('496b7c9e1d970b4f09da72c7bb8a7330'
          '1fc14f81f13383bbcdd06310ed39cb02'
          'd70583332d80bb930b95eceea989ffa2'
-         '8cb0fb112023cd1da6d2917a2d386217'
+         'cefbd35100ef50b16da435a2288b90af'
          '7e594a5c1aa04f39756f8f1f30a2b8fd'
+         'c6989acc180e24d02f54b3e15c126eeb'
          'c1549ac03b636273288afaf4046f3ad0'
-         'ce7578afc93de8db25672c2011c7833a')
+         'ce7578afc93de8db25672c2011c7833a'
+         '6d9247ed000249c8feb68a3c03dbd916')
 install="${pkgname}.install"
 
 shopt -s extglob
 shopt -s nocaseglob
 
 build() {
-  # Icon
-  convert "${CD_DIR}/empires.ico" "${srcdir}/${_appname}.png"
-  
   # Patch
   cd "${srcdir}"
   cabextract -L -d . aoepatch-sip.exe
   cabextract -L -d . aoepatch-egf.exe
+
+  # Icon
+  icotool -x "${CD_DIR}/empires.ico"
 }
 
 package() {
   local i
+  
+  . "${srcdir}/pkghelper.sh"
 
   # Copy original resources
   cd "${CD_DIR}/"
@@ -70,10 +76,12 @@ package() {
 
   # Game
   cd game
-  for i in "aelaunch.dll" "aoehlp.dll" "empires.hlp" "mapdef_1.bmp" "avi/"!(introx.avi) \
+  for i in "aelaunch.dll" "aoehlp.dll" "empires.hlp" \
            "campaign/"*.cpn  "data/"* "help/"* "learn/"* "savegame/"* "scenario/"* "sound/"!(x*.mid); do
-    install -Dm644 "${i}" "${pkgdir}/usr/share/games/${_appname}/base/${i,,*}"
+    install -Dm644 "${i}" "${pkgdir}/usr/share/games/${_appname}/base/$(_tr ${i})"
   done
+
+  install -Dm644 "mapdef_1.bmp" "${pkgdir}/usr/share/games/${_appname}/base/mapdefault.bmp"
 
   # Guess locale
   local -A localeIDs=([3082]=spn [1040]=itl [1046]=bra [1033]=eng [1031]=ger [1036]=frn)
@@ -84,6 +92,9 @@ package() {
   install -Dm644 "${srcdir}/empires.exe" "${pkgdir}/usr/share/games/${_appname}/base/empires.exe"
   install -Dm644 "${srcdir}/language.${locale}" "${pkgdir}/usr/share/games/${_appname}/base/language.dll"
 
+  # Registry
+  install -Dm644 "${srcdir}/${_appname}.reg.in" "${pkgdir}/usr/share/games/${_appname}/${_appname}.reg.in"
+
   # Modfs
   install -Dm644 "${srcdir}/01-user.conf" "${pkgdir}/etc/${_appname}.d/01-user.conf"
   install -Dm644 "${srcdir}/99-base.conf" "${pkgdir}/etc/${_appname}.d/99-base.conf"
@@ -92,7 +103,7 @@ package() {
   install -Dm644 "${srcdir}/${_appname}.desktop" "${pkgdir}/usr/share/applications/${_appname}.desktop"
   
   # Icon
-  install -Dm644 "${srcdir}/${_appname}-5.png" "${pkgdir}/usr/share/pixmaps/${_appname}.png"
+  install -Dm644 "${srcdir}/empires_6_48x48x8.png" "${pkgdir}/usr/share/pixmaps/${_appname}.png"
   
   # Shell scripts
   install -Dm644 "${srcdir}/lib${_appname}.sh" "${pkgdir}/usr/lib/lib${_appname}.sh"

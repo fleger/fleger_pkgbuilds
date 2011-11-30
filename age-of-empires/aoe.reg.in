@@ -1,0 +1,17 @@
+REGEDIT4
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Games\Age of Empires\1.00]
+"Custom Mouse"=dword:00000000
+"Game File Number"=dword:00000000
+"InstallationDirectory"="@APP_DIR_WINE@"
+"InstallType"="1"
+"Launched"="0"
+"Version"="1.0c"
+"Zone"="http://www.zone.com/asp/aoferedir.asp"
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\DirectPlay\Applications\Age of Empires]
+"CommandLine"="lobby"
+"CurrentDirectory"="@APP_DIR_WINE@"
+"File"="Empires.Exe"
+"Guid"="{3422E982-1A89-11d1-B093-00A024C74776}"
+"Path"="@APP_DIR_WINE@"
