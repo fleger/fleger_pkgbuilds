@@ -4,14 +4,14 @@ pkgbase="linux-dreamplug"
 pkgname=("linux-dreamplug" "linux-dreamplug-headers")       # Build kernel with a different name
 _kernelname=${pkgname#linux}
 _basekernel=3.1
-pkgver=${_basekernel}.2
+pkgver=${_basekernel}.4
 pkgrel=1
 arch=('arm')
 url="http://www.kernel.org/"
 license=('GPL2')
 makedepends=('xmlto' 'docbook-xsl' 'uboot-mkimage')
 options=('!strip')
-_alarmcommit="b27b059dbf765009304c148d9d68093e9f60a178"
+_alarmcommit="6205be12c61c5d419962a427bea489a71f34b4e5"
 source=("ftp://ftp.kernel.org/pub/linux/kernel/v3.x/linux-${_basekernel}.tar.bz2"
         "ftp://ftp.kernel.org/pub/linux/kernel/v3.x/patch-${pkgver}.bz2"
         "https://github.com/archlinuxarm/PKGBUILDs/raw/${_alarmcommit}/core/linux/archlinuxarm.patch"
@@ -27,13 +27,13 @@ source=("ftp://ftp.kernel.org/pub/linux/kernel/v3.x/linux-${_basekernel}.tar.bz2
         "http://sheeva.with-linux.com/sheeva/3/${_basekernel}/${pkgver}/source/mvsdio-2.patch"
         "http://sheeva.with-linux.com/sheeva/3/${_basekernel}/${pkgver}/source/linux-3.0.4-LIBERTAS-WEXT_PRIV.patch")
 md5sums=('8d43453f8159b2332ad410b19d86a931'
-         '7487d8e6f00c077f6e15d6f4f9947c30'
+         'b8b14bdfbf76cfef8e042e7d1a385fca'
          'e930a6fee04e63514d2c366c94519bb2'
          '3f64ed9d71499fe9293dc671f4e4087e'
          '29628745258df910abfb8cb24ca3ccd9'
          'c9e6e8bb0774a89f7f9bd30a13be7532'
          '55b04499a4578e586cf5a4d0b69fc5aa'
-         '22fabef7755c15e0dea2f879db08232f'
+         'fb1fa553bbeaf17a03e1df8a8d58b02d'
          '9d3c56a4b999c8bfbd4018089a62f662'
          'd00814b57448895e65fbbc800e8a58ba'
          '915a9380e205d4ca8c179c745831c3e0'
