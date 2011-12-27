@@ -1,0 +1,173 @@
+# Maintainer : Florian Léger <florian6 dot leger at laposte dot net>
+
+_appname=ffmpeg
+pkgname=ffmpeg-audio-only
+pkgver=20111211
+pkgrel=1
+pkgdesc="Complete and free Internet live audio broadcasting solution for Linux/Unix"
+arch=('i686' 'x86_64' 'arm')
+url="http://ffmpeg.org/"
+license=('GPL')
+depends=(alsa-lib gsm speex zlib bzip2)
+makedepends=('yasm')
+provides=("ffmpeg=$pkgver")
+conflicts=("ffmpeg")
+#git clone git://git.videolan.org/ffmpeg.git
+source=("ftp://ftp.archlinux.org/other/ffmpeg/${_appname}-${pkgver}.tar.xz")
+md5sums=('75d512bf5137d0b055e54313702ef5fc')
+
+build() {
+  cd "${srcdir}/${_appname}"
+
+  ./configure \
+    --prefix=/usr \
+    --disable-static \
+    --enable-shared \
+    --enable-gpl \
+    --enable-version3 \
+    --enable-nonfree \
+    --enable-ffmpeg \
+    --disable-avconv \
+    --disable-ffplay \
+    --disable-ffprobe \
+    --disable-ffserver \
+    --disable-avdevice \
+    --disable-swscale \
+    --disable-postproc \
+    --disable-avfilter \
+    --disable-network \
+    --disable-vaapi \
+    --disable-vda \
+    --disable-vdpau \
+    --disable-dxva2 \
+    --enable-runtime-cpudetect \
+    --disable-encoders \
+    --disable-decoders \
+    --enable-decoder=aac \
+    --enable-decoder=aac_latm \
+    --enable-decoder=ac3 \
+    --enable-decoder=adpcm_4xm \
+    --enable-decoder=adpcm_adx \
+    --enable-decoder=adpcm_ct \
+    --enable-decoder=adpcm_ea \
+    --enable-decoder=adpcm_ea_maxis_xa \
+    --enable-decoder=adpcm_ea_r1 \
+    --enable-decoder=adpcm_ea_r2 \
+    --enable-decoder=adpcm_ea_r3 \
+    --enable-decoder=adpcm_ea_xas \
+    --enable-decoder=adpcm_g722 \
+    --enable-decoder=adpcm_g726 \
+    --enable-decoder=adpcm_ima_amv \
+    --enable-decoder=adpcm_ima_dk3 \
+    --enable-decoder=adpcm_ima_dk4 \
+    --enable-decoder=adpcm_ima_ea_eacs \
+    --enable-decoder=adpcm_ima_ea_sead \
+    --enable-decoder=adpcm_ima_iss \
+    --enable-decoder=adpcm_ima_qt \
+    --enable-decoder=adpcm_ima_smjpeg \
+    --enable-decoder=adpcm_ima_wav \
+    --enable-decoder=adpcm_ima_ws \
+    --enable-decoder=adpcm_ms \
+    --enable-decoder=adpcm_sbpro_2 \
+    --enable-decoder=adpcm_sbpro_3 \
+    --enable-decoder=adpcm_sbpro_4 \
+    --enable-decoder=adpcm_swf \
+    --enable-decoder=adpcm_thp \
+    --enable-decoder=adpcm_xa \
+    --enable-decoder=adpcm_yamaha   \
+    --enable-decoder=alac \
+    --enable-decoder=ape \
+    --enable-decoder=atrac1 \
+    --enable-decoder=atrac3 \
+    --enable-decoder=eac3 \
+    --enable-decoder=flac \
+    --enable-decoder=libspeex \
+    --enable-decoder=mp1 \
+    --enable-decoder=mp2 \
+    --enable-decoder=mp3 \
+    --enable-decoder=mpc7 \
+    --enable-decoder=mpc8 \
+    --enable-decoder=shorten \
+    --enable-decoder=tta \
+    --enable-decoder=vorbis \
+    --enable-decoder=wavpack \
+    --enable-decoder=wmalossless \
+    --enable-decoder=wmapro \
+    --enable-decoder=wmav1 \
+    --enable-decoder=wmav2 \
+    --enable-decoder=wmavoice \
+    --enable-decoder=pcm_alaw \
+    --enable-decoder=pcm_bluray \
+    --enable-decoder=pcm_dvd \
+    --enable-decoder=pcm_f32be \
+    --enable-decoder=pcm_f32le \
+    --enable-decoder=pcm_f64be \
+    --enable-decoder=pcm_f64le \
+    --enable-decoder=pcm_lxf \
+    --enable-decoder=pcm_mulaw \
+    --enable-decoder=pcm_s16be \
+    --enable-decoder=pcm_s16le \
+    --enable-decoder=pcm_s16le_planar \
+    --enable-decoder=pcm_s24be \
+    --enable-decoder=pcm_s24daud \
+    --enable-decoder=pcm_s24le \
+    --enable-decoder=pcm_s32be \
+    --enable-decoder=pcm_s32le \
+    --enable-decoder=pcm_s8 \
+    --enable-decoder=pcm_s8_planar \
+    --enable-decoder=pcm_u16be \
+    --enable-decoder=pcm_u16le \
+    --enable-decoder=pcm_u24be \
+    --enable-decoder=pcm_u24le \
+    --enable-decoder=pcm_u32be \
+    --enable-decoder=pcm_u32le \
+    --enable-decoder=pcm_u8 \
+    --enable-decoder=pcm_zork \
+    --disable-hwaccels \
+    --disable-muxers \
+    --disable-demuxers \
+    --enable-demuxer=aac \
+    --enable-demuxer=ac3 \
+    --enable-demuxer=ape \
+    --enable-demuxer=aiff \
+    --enable-demuxer=asf \
+    --enable-demuxer=au \
+    --enable-demuxer=dts \
+    --enable-demuxer=eac3 \
+    --enable-demuxer=flac \
+    --enable-demuxer=matroska \
+    --enable-demuxer=mov \
+    --enable-demuxer=mp3 \
+    --enable-demuxer=mpc \
+    --enable-demuxer=mpc8 \
+    --enable-demuxer=ogg \
+    --enable-demuxer=shorten \
+    --enable-demuxer=tta \
+    --enable-demuxer=wav \
+    --enable-demuxer=wv \
+    --disable-parsers \
+    --enable-parser=aac \
+    --enable-parser=aac_latm \
+    --enable-parser=ac3 \
+    --enable-parser=flac \
+    --enable-parser=mpegaudio \
+    --disable-bsfs \
+    --disable-protocols \
+    --enable-protocol=file \
+    --disable-filters \
+    --disable-indevs \
+    --disable-outdevs \
+    --enable-libgsm \
+    --enable-libspeex \
+    --disable-debug
+
+  make
+  make tools/qt-faststart
+  make doc/ffmpeg.1
+}
+
+package() {
+  cd "${srcdir}/${_appname}"
+  make DESTDIR="${pkgdir}" install
+  install -Dm755 tools/qt-faststart "${pkgdir}/usr/bin/qt-faststart"
+}
