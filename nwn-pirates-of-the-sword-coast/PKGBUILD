@@ -1,0 +1,27 @@
+# Maintainer: Florian Léger <florian6 dot leger at laposte dot net>
+
+_modulename="pirates-of-the-sword-coast"
+pkgname="nwn-${_modulename}"
+pkgver=1.0
+pkgrel=1
+pkgdesc="Neverwinter Nights: Pirates Of The Sword Coast (premium module)"
+arch=("any")
+license=("custom")
+depends=("nwn-sou-resources" "nwn-hotu-resources")
+url="http://nwn.bioware.com/"
+source=("http://content.bioware.com/neverwinternights/modules_premium/PiratesOfTheSwordCoast.zip")
+md5sums=('a651a7eec2830e2e6d536e055e968a1a')
+
+package() {
+  cd "${srcdir}"
+  local f
+  for f in docs/PotSCCredits.txt hak/* movies/* nwm/* premium/*; do
+    install -Dm644 "${f}" "${pkgdir}/opt/nwn/${_modulename}/${f}"
+  done
+
+  install -Dm644 "docs/PotSCEULA.txt" "${pkgdir}/usr/share/licenses/${pkgname}/PotSCEULA.txt"
+
+  install -d "${pkgdir}/etc/nwn/branches.d"
+  echo "MODFS_BRANCHES+=(\"/opt/nwn/${_modulename}=RO\")" > "${pkgdir}/etc/nwn/branches.d/95-${_modulename}.conf"
+}
+
