@@ -1,25 +1,27 @@
 # Maintainer: Florian Léger <florian6 dot leger at laposte dot net>
 
-pkgname=nwn-kingmaker
+_modulename="kingmaker"
+pkgname="nwn-${_modulename}"
 pkgver=1.1
 pkgrel=1
-pkgdesc="Neverwinter Nights - Kingmaker premium module"
+pkgdesc="Neverwinter Nights: Kingmaker (premium module)"
 arch=("any")
 license=("custom")
 depends=("nwn-hotu-resources")
 url="http://nwn.bioware.com/"
-source=("http://content.bioware.com/neverwinternights/modules_premium/Kingmaker.zip"
-        "95-kingmaker.conf")
-md5sums=('41e11572a54dbf60ea9f8a21aafca0b3'
-         'bf1e5d58e74c7703aae3762139d82e24')
+source=("http://content.bioware.com/neverwinternights/modules_premium/Kingmaker.zip")
+md5sums=('41e11572a54dbf60ea9f8a21aafca0b3')
 
 package() {
   cd "${srcdir}"
+
   local f
   for f in hak/* movies/* nwm/* premium/*; do
-    install -Dm644 "${f}" "${pkgdir}/opt/nwn/kingmaker/${f}"
+    install -Dm644 "${f}" "${pkgdir}/opt/nwn/${_modulename}/${f}"
   done
-  install -Dm644 docs/KMEULA.txt "${pkgdir}/usr/share/licenses/${pkgname}/KMEULA.txt"
-  install -Dm644 95-kingmaker.conf "${pkgdir}/etc/nwn/branches.d/95-kingmaker.conf"
-}
 
+  install -Dm644 "docs/KMEULA.txt" "${pkgdir}/usr/share/licenses/${pkgname}/KMEULA.txt"
+
+  install -d "${pkgdir}/etc/nwn/branches.d"
+  echo "MODFS_BRANCHES+=(\"/opt/nwn/${_modulename}=RO\")" > "${pkgdir}/etc/nwn/branches.d/95-${_modulename}.conf"
+}
