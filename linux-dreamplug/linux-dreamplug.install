@@ -2,7 +2,7 @@
 # arg 2:  the old package version
 
 KERNEL_NAME=-dreamplug
-KERNEL_VERSION=3.1.4-1-dreamplug
+KERNEL_VERSION=3.1.7-1-dreamplug
 
 post_install () {
   echo -e "\033[1mNotice\033[0m"
