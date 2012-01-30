@@ -1,17 +1,20 @@
 # Maintainer: Florian Léger <florian6 dot leger at laposte dot net>
 
-pkgname=eos-git
-pkgver=20120107
+pkgname=xoreos-git
+pkgver=20120130
 pkgrel=1
 pkgdesc="A reimplementation of BioWare's Aurora engine (and derivatives)"
 arch=('i686' 'x86_64')
-url="https://github.com/DrMcCoy/eos"
+url="https://github.com/DrMcCoy/xoreos"
 license=('GPL')
 depends=('boost-libs' 'mesa' 'sdl' 'freetype2' 'openal' 'libmad' 'libogg' 'libvorbis' 'faad2' 'xvidcore')
 makedepends=('git' 'boost')
+replaces=("eos-git")
+provides=("xoreos")
+conflicts=("xoreos")
 
-_gitroot="https://github.com/DrMcCoy/eos.git"
-_gitname="eos"
+_gitroot="https://github.com/DrMcCoy/xoreos.git"
+_gitname="xoreos"
 
 build() {
   cd "$srcdir"
