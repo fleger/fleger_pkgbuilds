@@ -1,0 +1,14 @@
+post_install() {
+  post_upgrade
+}
+
+post_upgrade() {
+  chown root:users "/run/user-daemons" 1>/dev/null
+  chmod 775 "/run/user-daemons"
+  cat << EOF
+==> Copy and edit the configuration file:
+    $ install -Dm644 "/usr/share/user-initscripts/examples/user-rc.conf" "\${XDG_CONFIG_HOME-=\$HOME/.config}/user-rc.conf"
+==> For instance, use this command in your ~/.profile to automatically start the daemons at login:
+    $ /usr/sbin/user-rc.d autostart
+EOF
+}

@@ -1,0 +1,42 @@
+# Maintainer: Florian Léger <florian6 dot leger at laposte dot net>
+pkgname=user-initscripts-git
+pkgver=20120302
+pkgrel=1
+pkgdesc="A user daemon system based on and relying upon the Arch Linux initscripts."
+url="https://github.com/fleger/user-initscripts"
+arch=(any)
+depends=("bash")
+makedepends=('git')
+license=('GPL')
+provides=("user-initscripts")
+conflicts=("user-initscripts")
+install="${pkgname}.install"
+
+_gitroot="http://github.com/fleger/user-initscripts.git"
+_gitname="user-initscripts"
+
+build() {
+  cd "$srcdir"
+  msg "Connecting to GIT server...."
+
+  if [ -d $_gitname ] ; then
+    cd $_gitname && git pull origin
+    msg "The local files are updated."
+  else
+    git clone $_gitroot $_gitname
+  fi
+
+  msg "GIT checkout done or server timeout"
+  msg "Starting make..."
+
+  rm -rf "$srcdir/$_gitname-build"
+  git clone "$srcdir/$_gitname" "$srcdir/$_gitname-build"
+  cd "$srcdir/$_gitname-build"
+}
+
+package() {
+  cd "$srcdir/$_gitname-build"
+  DEST_DIR="${pkgdir}" ./setup.sh
+}
+
+
