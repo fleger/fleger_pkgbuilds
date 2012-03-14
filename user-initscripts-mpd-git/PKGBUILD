@@ -1,0 +1,36 @@
+#Maintainer: Florian Léger <florian6 dot leger at laposte dot net>
+pkgname=user-initscripts-mpd-git
+pkgver=20120314
+pkgrel=1
+pkgdesc="MPD user daemon script for user-initscripts."
+arch=(any)
+url="https://gist.github.com/849049"
+license=('GPL')
+depends=('user-initscripts' 'mpd')
+makedepends=('git')
+
+_gitroot="http://github.com/gist/1960771.git"
+_gitname="user-initscripts-mpd"
+
+build() {
+  cd "$srcdir"
+  msg "Connecting to GIT server...."
+
+  if [ -d $_gitname ] ; then
+    cd $_gitname && git pull origin
+    msg "The local files are updated."
+  else
+    git clone $_gitroot $_gitname
+  fi
+
+  msg "GIT checkout done or server timeout"
+  msg "Starting make..."
+
+  rm -rf "$srcdir/$_gitname-build"
+  git clone "$srcdir/$_gitname" "$srcdir/$_gitname-build"
+  cd "$srcdir/$_gitname-build"
+}
+
+package() {
+  install -Dm755 "$srcdir/$_gitname-build/mpd" "$pkgdir/etc/user-rc.d/mpd"
+} 
