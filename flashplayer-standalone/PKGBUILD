@@ -3,9 +3,9 @@
 
 pkgbase=flashplayer-standalone
 pkgname=(flashplayer-standalone)
-depends=('gtk2' 'libxt' 'nss' 'desktop-file-utils')
+depends=('gtk2' 'libxt' 'nss' 'curl' 'desktop-file-utils')
 [ "x$CARCH" = "xx86_64" ] && pkgname=('bin32-flashplayer-standalone')
-[ "x$CARCH" = "xx86_64" ] &&  depends=('lib32-gtk2' 'lib32-libxt' 'lib32-nss' 'desktop-file-utils')
+[ "x$CARCH" = "xx86_64" ] &&  depends=('lib32-gtk2' 'lib32-libxt' 'lib32-nss' 'lib32-curl' 'desktop-file-utils')
 pkgver=11.2.202.235
 pkgrel=3
 pkgdesc="Macromedia standalone flash player (nonfree)"
