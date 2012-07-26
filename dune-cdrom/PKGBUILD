@@ -1,0 +1,62 @@
+# Maintainer: Florian Léger <florian6 dot leger at laposte dot net>
+
+_appname="dune"
+pkgname=dune-cdrom
+pkgver=1.0
+pkgrel=1
+pkgdesc="Adventure and strategy game based on Frank Herbert's Dune (uses DOSBox, CD-ROM required)"
+arch=("any")
+depends=("dosbox")
+makedepends=("convmv")
+provides=("dune")
+conflicts=("dune")
+license=("custom")
+url="http://en.wikipedia.org/wiki/Dune_%28video_game%29"
+source=("${_appname}.png"
+        "lib${_appname}.sh"
+        "${_appname}.sh"
+        "${_appname}-config.sh"
+        "${_appname}.desktop"
+        "${_appname}-config.desktop"
+)
+md5sums=('8b9880ac078fcaca92bacb63cfce2071'
+         '0e7197cf0ca42bc47f08e29599e17b5e'
+         'cb3b5863bd120b11996048f810f819fb'
+         'f07db063ae33ec6f250dc6bc76f2cca4'
+         '148aa83edc5d42a510601d625a027571'
+         '9d0f07e7cdce8575c4e3b41a333e3635')
+install="${pkgname}.install"
+
+# Note: this PKGBUILD only works with the Dune CDROM edition of the game,
+# *not* with the Floppy Disks edition.
+
+# Change this to the path where your Dune CDROM is mounted
+: ${CD_DIR:="$HOME/tmp/dos/dunecd"}
+
+package() {
+  local diskDir="${pkgdir}/usr/share/games/${_appname}"
+
+  # Copy data (case insensitive)
+  cd "${CD_DIR}"
+
+  local f
+  for f in "./dncdprg.exe" "./dune.dat" "./dune.exe" "./install.exe" "./readme.doc"; do
+    find . -iwholename "${f}" -exec install -Dm644 "{}" "${diskDir}/{}" \;
+  done
+
+  # Fix case
+  cd "${diskDir}"
+  convmv --lower --notest -r *
+
+  # Shell scripts
+  install -Dm644 "${srcdir}/lib${_appname}.sh" "${pkgdir}/usr/lib/lib${_appname}.sh"
+  install -Dm755 "${srcdir}/${_appname}.sh" "${pkgdir}/usr/bin/${_appname}"
+  install -Dm755 "${srcdir}/${_appname}-config.sh" "${pkgdir}/usr/bin/${_appname}-config"
+
+  # .desktop file
+  install -Dm644 "${srcdir}/${_appname}.desktop" "${pkgdir}/usr/share/applications/${_appname}.desktop"
+  install -Dm644 "${srcdir}/${_appname}-config.desktop" "${pkgdir}/usr/share/applications/${_appname}-config.desktop"
+
+  # Icon
+  install -Dm644 "${srcdir}/${_appname}.png" "${pkgdir}/usr/share/pixmaps/${_appname}.png"
+}

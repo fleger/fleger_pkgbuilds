@@ -1,0 +1,15 @@
+[Desktop Entry]
+Name=Dune
+GenericName=Adventure / strategy game
+GenericName[fr]=Jeu d'aventure / stratégie
+Comment=Adventure / strategy game set in Frank Herbert's Dune universe.
+Comment[fr]=Jeu d'aventure / stratégie dans l'univers de Dune de Frank Herbert.
+Encoding=UTF-8
+Version=1.0
+Type=Application
+Terminal=false
+Icon=dune
+Exec=dune
+Categories=Game;AdventureGame;StrategyGame;
+
+
