@@ -3,59 +3,160 @@
 pkgname=swkotor
 pkgdesc="RPG set in the Star Wars universe (uses Wine)"
 pkgver=1.03
+_targetver=103514077
 pkgrel=1
 arch=(i686 x86_64)
 license=("custom")
 url="http://www.bioware.com/games/knights_old_republic/"
-source=("swkotor.desktop" "swkotor.sh" "01-user.conf" "99-original-resources.conf")
+source=("01-user.conf"
+        "99-base.conf"
+        "libswkotor.sh"
+        "swkotor-config.desktop"
+        "swkotor-config.sh"
+        "swkotor.desktop"
+        "swkotor.sh")
 depends=("modfs-git" "wine")
-makedepends=("icoutils" "findutils" "convmv")
-md5sums=('ae18ec295eb33a66d9e6f40cc949873b'
-         '957807ce813515e3fb120110bc4462c8'
-         '20b27fc92c8d98c625706af8899be3d7'
-         '54e62ce255dbdaac66969c2b18e9aa99')
+makedepends=("icoutils" "convmv" "unshield")
+[[ "$CARCH" = "x86_64" ]] && makedepends+=("lib32-fakeroot")
+
+md5sums=('c1549ac03b636273288afaf4046f3ad0'
+         '3ac4bed8f77db62f9f0ff51cd089af9d'
+         '8fb9c45f2969b17ab8db23087677f64a'
+         '22e90379e07d94cb3890336d4e19af80'
+         '9832d0591f03d8ed7baa298d11cda7d0'
+         'a80078f058d4b6a0da518b8aec4f16f6'
+         '7802e8fe13a6b678c7c6f2504edc00d2')
+
 options=(!strip)
 
 # Package options
-# Until I find a way to programmaticaly extract the content of the 1.03 patch,
-# you will need to supply the path to an already installed and patched KotOR.
-_kotorPath="$HOME/.wine/drive_c/Program Files/LucasArts/SWKotOR"
+# CD paths. If you have the DVD edition, put the DVD path in CD1_DIR
+: ${CD1_DIR:="$HOME/media/Star_Wars__Knights_Of_The_Old_Republic_(US).iso/"}
+: ${CD2_DIR:="$HOME/media/Star_Wars__Knights_Of_The_Old_Republic_(US).iso/"}
+: ${CD3_DIR:="$HOME/media/Star_Wars__Knights_Of_The_Old_Republic_(US).iso/"}
+: ${CD4_DIR:="$HOME/media/Star_Wars__Knights_Of_The_Old_Republic_(US).iso/"}
 
-build() {
-  cd "$srcdir"
-  find "$_kotorPath" -maxdepth 1 -iname "swkotor.exe" -exec wrestool -x -t group_icon '{}'  > "swkotor.ico" \;
-  icotool -x -i 2 swkotor.ico
+swkotor.isDvd() {
+  [[ -f "$1/data1.hdr" && "$1/data1.cab" && "$1/data2.cab" && "$1/data3.cab" && "$1/data4.cab" && "$1/data5.cab" ]]
+}
+
+swkotor.getLanguage() {
+  local line
+  local re='^SWCABS ([A-Z]+)$'
+  while read line; do
+    [[ "$line" =~ $re ]] &&
+    echo "${BASH_REMATCH[1]}"
+  done < <(unshield g "$1")
+  return 0
+}
+
+swkotor.getVersion() {
+  local version
+  local build
+  version="$(wrestool -x -R -t version "$1" | tr '\0, ' '\t.\0' | sed 's/\t\t/_/g' | tr -c -d '[:print:]' | sed -r -n 's/.*Version[^0-9]*([0-9]+\.[0-9]+(\.[0-9][0-9]?)?).*/\1/p')"
+  build="$(wrestool -x -R -t version "$1" | tr '\0, ' '\t.\0' | sed 's/\t\t/_/g' | tr -c -d '[:print:]' | sed -r -n 's/.*PrivateBuild[^0-9]*([0-9]+).*/\1/p')"
+  echo "${version//.}$build"
 }
 
 package() {
-  install -d "$pkgdir/opt/swkotor"
+  local realBaseDir="/usr/share/games/swkotor/base"
+  local baseDir="$pkgdir$realBaseDir"
+  local -ar cds=("$CD1_DIR" "$CD2_DIR" "$CD3_DIR" "$CD4_DIR")
+  local -Ar datas=(
+    ["$CD4_DIR"]=data5.cab
+    ["$CD3_DIR"]=data4.cab
+    ["$CD2_DIR"]=data3.cab
+    ["$CD1_DIR"]=data2.cab
+  )
 
-  # Copy original resources (case-insensitive)
-  cd "$_kotorPath"
-  local i
-  for i in data docs lips logs miles modules movies override rims saves streammusic streamsounds streamwaves texturepacks \
-           binkw32.dll chitin.key dialog.tlk patch.erf patchw32.dll swkotor.exe swkotor.ini; do
-    find . -maxdepth 1 -iname "$i" -exec cp -r '{}' "$pkgdir/opt/swkotor" \;
+  # Unsure about ITA and SPA
+  local -Ar languageMappings=(
+    ["US"]=english
+    ["UK"]=english
+    ["GER"]=german
+    ["FRE"]=french
+    ["ITA"]=italian
+    ["SPA"]=spanish
+  )
+
+  local -r tmpDir="$srcdir/tmp"
+  local language
+  install -d "$tmpDir"
+  install -d "$baseDir"
+
+  local cdDir
+  local f
+  for cdDir in "${cds[@]}"; do
+    while [[ ! -f "$cdDir/${datas["$cdDir"]}" ]]; do
+      echo "Mount the disk containing ${datas["$cdDir"]} into $cdDir and press return."
+      read
+    done
+    if [[ -f "$cdDir/data1.hdr" ]]; then
+      install -Dm644 "$cdDir/data1.hdr" "$tmpDir/data1.hdr"
+      language="$(swkotor.getLanguage "$tmpDir/data1.hdr")"
+      echo "language: $language"
+    fi
+    for f in "$cdDir/data"?".cab"; do
+      ln -sf "$f" "$tmpDir"
+    done
+    cd "$tmpDir"
+    unshield -g "SWCABS $language" -L -d "$baseDir/.." x "${datas["$cdDir"]}" || true
+    rm data?.cab
+    swkotor.isDvd "$cdDir" && break
   done
 
-  find . -maxdepth 1 -iname "swkotorv103.txt" -exec install -Dm644 '{}' "$pkgdir/opt/swkotor/docs/swkotorv103.txt" \;
-  cd "$pkgdir/opt/swkotor"
-  
+  if [[ -f "$tmpDir/data1.hdr" ]]; then
+    rm "$tmpDir/data1.hdr"
+  fi
+
+  mv -T "$baseDir/../swcabs_${language,,*}" "$baseDir"
+
+  cd "$baseDir"
+
+  local version="$(swkotor.getVersion "swkotor.exe")"
+
+  if [[ "$_targetver" != "$version" ]]; then
+    # Download patch and a patch.exe
+    source=("ftp://ftp.lucasarts.com/patches/pc/sw_pc_${languageMappings["$language"]}_from${version}_to${_targetver}.zip"
+            "http://3do.xsa1.com/pub/support/patches/ibm/h2wexp21.zip")
+    download_sources
+    cd "$srcdir"
+    bsdtar -xf "sw_pc_${languageMappings["$language"]}_from${version}_to${_targetver}.zip"
+    bsdtar -xf "h2wexp21.zip" PATCH.EXE
+    export WINEPREFIX="$tmpDir"
+    export WINEDLLOVERRIDES="winemenubuilder.exe=d;mshtml=d;mscoree=d"
+    cd "$baseDir"
+    ln -sf "$srcdir/PATCH.EXE"
+    DISPLAY= wine PATCH.EXE "$(DISPLAY= winepath -w "$srcdir/sw_pc_${languageMappings["$language"]}_from${version}_to${_targetver}.rtp")"
+    rm PATCH.EXE
+    install -Dm644 "$srcdir/SWKotORv${pkgver//.}.txt" "$baseDir/docs/SWKotORv${pkgver//.}.txt"
+  fi
+
   # Fix case
   convmv --lower --notest -r *
-  
-  ln -s miles/mss32.dll
-  
+
+  ln -sf miles/mss32.dll
+
   # Fix permissions
-  find . -type d -exec chmod 755 '{}' \;
-  find . -type f -exec chmod 644 '{}' \;
-  
+  find "$pkgdir" -type f -exec chmod 644 "{}" \;
+  find "$pkgdir" -type d -exec chmod 755 "{}" \;
+
+  cd "$srcdir"
+  wrestool -x -t group_icon "$baseDir/swkotor.exe"  > "swkotor.ico"
+  icotool -x -i 2 swkotor.ico
+  wrestool -x -t group_icon "$baseDir/swconfig.exe"  > "swkotor-config.ico"
+  icotool -x -i 2 swkotor-config.ico
+
   install -d "$pkgdir/usr/share/licenses/swkotor"
-  ln -s "/opt/swkotor/docs/eula.txt" "$pkgdir/usr/share/licenses/swkotor/eula.txt"
-  
+  ln -s "$realBaseDir/docs/eula.txt" "$pkgdir/usr/share/licenses/swkotor/eula.txt"
+
   install -Dm644 "$srcdir/01-user.conf" "$pkgdir/etc/swkotor.d/01-user.conf"
-  install -Dm644 "$srcdir/99-original-resources.conf" "$pkgdir/etc/swkotor.d/99-original-resources.conf"
+  install -Dm644 "$srcdir/99-base.conf" "$pkgdir/etc/swkotor.d/99-base.conf"
   install -Dm644 "$srcdir/swkotor.desktop" "$pkgdir/usr/share/applications/swkotor.desktop"
+  install -Dm644 "$srcdir/swkotor-config.desktop" "$pkgdir/usr/share/applications/swkotor-config.desktop"
   install -Dm644 "$srcdir/swkotor_2_48x48x8.png" "$pkgdir/usr/share/pixmaps/swkotor.png"
+  install -Dm644 "$srcdir/swkotor-config_2_48x48x8.png" "$pkgdir/usr/share/pixmaps/swkotor-config.png"
+  install -Dm644 "$srcdir/libswkotor.sh" "$pkgdir/usr/lib/libswkotor.sh"
   install -Dm755 "$srcdir/swkotor.sh" "$pkgdir/usr/bin/swkotor"
+  install -Dm755 "$srcdir/swkotor-config.sh" "$pkgdir/usr/bin/swkotor-config"
 }

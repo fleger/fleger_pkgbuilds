@@ -9,8 +9,8 @@ fi
 
 readonly SCRIPT_NAME="${0}"
 
-swkotor.script.game() {
-  wine swkotor.exe "$@"
+swkotor.script.config() {
+  wine swconfig.exe "$@"
 }
 
-swkotor.run swkotor.script.game "$@"
+swkotor.run swkotor.script.config "$@"

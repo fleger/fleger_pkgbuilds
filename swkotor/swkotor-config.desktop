@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Knights of the Old Republic settings
+Name[fr]=Configuration de Knights of the Old Republic
+Encoding=UTF-8
+Version=1.0
+Type=Application
+Terminal=false
+Icon=swkotor-config
+Exec=swkotor-config
+Categories=Settings;
