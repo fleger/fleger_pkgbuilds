@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Knights of the Old Republic II settings
+Name[fr]=Configuration de Knights of the Old Republic II
+Encoding=UTF-8
+Version=1.0
+Type=Application
+Terminal=false
+Icon=swkotor2-config
+Exec=swkotor2-config
+Categories=Settings;

@@ -1,0 +1,166 @@
+# Maintainer: Florian Léger <florian6 dot leger at laposte dot net>
+
+pkgname=swkotor2
+pkgdesc="RPG set in the Star Wars universe (uses Wine)"
+pkgver=1.0b
+_targetver=210427
+pkgrel=1
+arch=(i686 x86_64)
+license=("custom")
+url="http://www.bioware.com/games/knights_old_republic/"
+source=("01-user.conf"
+        "99-base.conf"
+        "libswkotor2.sh"
+        "swkotor2-config.desktop"
+        "swkotor2-config.sh"
+        "swkotor2.desktop"
+        "swkotor2.sh")
+depends=("modfs-git" "wine")
+makedepends=("icoutils" "convmv" "unshield")
+[[ "$CARCH" = "x86_64" ]] && makedepends+=("lib32-fakeroot")
+
+md5sums=('c1549ac03b636273288afaf4046f3ad0'
+         'b95eeae72781790856b4b211b590b009'
+         '9a5a6435ce9f501a9a280cfb7dfec9cd'
+         '7c7e677ea4165e114760d3a077ccda22'
+         '56a17b40ef0687eb722c11f465b96a3f'
+         '5d0d09d9c35844b2bb1a02c55aa33d78'
+         '63fcb94d86cb3f42ca4780f880b657ed')
+
+options=(!strip)
+
+# Package options
+# CD paths. If you have the DVD edition, put the DVD path in CD1_DIR
+: ${CD1_DIR:="$HOME/media/Star_Wars__Knights_Of_The_Old_Republic_II__The_Sith_Lords.iso/"}
+: ${CD2_DIR:="$HOME/media/Star_Wars__Knights_Of_The_Old_Republic_II__The_Sith_Lords.iso/"}
+: ${CD3_DIR:="$HOME/media/Star_Wars__Knights_Of_The_Old_Republic_II__The_Sith_Lords.iso/"}
+: ${CD4_DIR:="$HOME/media/Star_Wars__Knights_Of_The_Old_Republic_II__The_Sith_Lords.iso/"}
+
+swkotor2.isDvd() {
+  [[ -f "$1/data1.hdr" && "$1/data1.cab" && "$1/data2.cab" && "$1/data3.cab" && "$1/data4.cab" && "$1/data5.cab" ]]
+}
+
+swkotor2.setVersion() {
+  local versionNum
+  local build
+  versionNum="$(wrestool -x -R -t version "$1" | tr '\0, ' '\t.\0' | sed 's/\t\t/_/g' | tr -c -d '[:print:]' | sed -r -n 's/.*Version[^0-9]*([0-9]+\.[0-9]+(\.[0-9][0-9]?)?).*/\1/p')"
+  build="$(wrestool -x -R -t version "$1" | tr '\0, ' '\t.\0' | sed 's/\t\t/_/g' | tr -c -d '[:print:]' | sed -r -n 's/.*PrivateBuild[^0-9]*([0-9]+).*/\1/p')"
+  version="${versionNum//.}$build"
+}
+
+swkotor2.setLanguage() {
+  local languageId
+  read languageId < <(od -j 8 -N 4 -t d4 -A n "$1")
+  case "$languageId" in
+    "0")  if [[ "$2" == "200424" ]]; then
+            language="english"
+          else
+            language="uk"
+          fi;;
+    "1")  language="french";;
+    "2")  language="german";;
+    "3")  language="italian";;
+    "4")  language="spanish";;
+    *)    return 1;;
+  esac
+}
+
+package() {
+  local realBaseDir="/usr/share/games/swkotor2/base"
+  local baseDir="$pkgdir$realBaseDir"
+  local -ar cds=("$CD1_DIR" "$CD2_DIR" "$CD3_DIR" "$CD4_DIR")
+  local -Ar datas=(
+    ["$CD4_DIR"]=data5.cab
+    ["$CD3_DIR"]=data4.cab
+    ["$CD2_DIR"]=data3.cab
+    ["$CD1_DIR"]=data2.cab
+  )
+
+  local -r tmpDir="$srcdir/tmp"
+  install -d "$tmpDir"
+  install -d "$baseDir"
+
+  local cdDir
+  local f
+  for cdDir in "${cds[@]}"; do
+    cd "$srcdir"
+    while [[ ! -f "$cdDir/${datas["$cdDir"]}" ]]; do
+      echo "Mount the disk containing ${datas["$cdDir"]} into $cdDir and press return."
+      read
+    done
+    cd "$cdDir"
+    for f in "./dialog*.tlk" "./swkotor2.exe" "./docs/*"; do
+      find . -iwholename "$f" -exec install -Dm644 "{}" "${baseDir}/../defaultcomponent/{}" \;
+    done
+    if [[ -f "$cdDir/data1.hdr" ]]; then
+      install -Dm644 "$cdDir/data1.hdr" "$tmpDir/data1.hdr"
+    fi
+    for f in "$cdDir/data"?".cab"; do
+      ln -sf "$f" "$tmpDir"
+    done
+    cd "$tmpDir"
+    unshield -g "DefaultComponent" -L -d "$baseDir/.." x "${datas["$cdDir"]}" || true
+    rm data?.cab
+    swkotor2.isDvd "$cdDir" && break
+  done
+
+  if [[ -f "$tmpDir/data1.hdr" ]]; then
+    rm "$tmpDir/data1.hdr"
+  fi
+
+  mv -T "$baseDir/../defaultcomponent" "$baseDir"
+
+  cd "$baseDir"
+
+  # Fix case
+  convmv --lower --notest -r *
+
+  local version
+  local language
+  swkotor2.setVersion "swkotor2.exe"
+  swkotor2.setLanguage "dialog.tlk" "$version"
+
+  msg2 "Detected version: $language $version"
+
+  if [[ "$_targetver" != "$version" ]]; then
+    # Download patch and a patch.exe
+    source=("ftp://ftp.lucasarts.com/patches/pc/sw_pc_${language}_from${version}_to${_targetver}.zip"
+            "http://3do.xsa1.com/pub/support/patches/ibm/h2wexp21.zip")
+    download_sources
+    cd "$srcdir"
+    bsdtar -xf "sw_pc_${language}_from${version}_to${_targetver}.zip"
+    bsdtar -xf "h2wexp21.zip" PATCH.EXE
+    export WINEPREFIX="$tmpDir"
+    export WINEDLLOVERRIDES="winemenubuilder.exe=d;mshtml=d;mscoree=d"
+    cd "$baseDir"
+    ln -sf "$srcdir/PATCH.EXE"
+    DISPLAY= wine PATCH.EXE "$(DISPLAY= winepath -w "$srcdir/KOTOR2 PATCH.RTP")"
+    rm PATCH.EXE
+  fi
+
+  # Fix case
+  convmv --lower --notest -r *
+
+  # Fix permissions
+  find "$pkgdir" -type f -exec chmod 644 "{}" \;
+  find "$pkgdir" -type d -exec chmod 755 "{}" \;
+
+  cd "$srcdir"
+  wrestool -x -t group_icon "$baseDir/swkotor2.exe"  > "swkotor2.ico"
+  icotool -x -i 2 swkotor2.ico
+  wrestool -x -t group_icon "$baseDir/swconfig.exe"  > "swkotor2-config.ico"
+  icotool -x -i 2 swkotor2-config.ico
+
+  install -d "$pkgdir/usr/share/licenses/swkotor2"
+  ln -s "$realBaseDir/docs/eula.txt" "$pkgdir/usr/share/licenses/swkotor2/eula.txt"
+
+  install -Dm644 "$srcdir/01-user.conf" "$pkgdir/etc/swkotor2.d/01-user.conf"
+  install -Dm644 "$srcdir/99-base.conf" "$pkgdir/etc/swkotor2.d/99-base.conf"
+  install -Dm644 "$srcdir/swkotor2.desktop" "$pkgdir/usr/share/applications/swkotor2.desktop"
+  install -Dm644 "$srcdir/swkotor2-config.desktop" "$pkgdir/usr/share/applications/swkotor2-config.desktop"
+  install -Dm644 "$srcdir/swkotor2_2_48x48x8.png" "$pkgdir/usr/share/pixmaps/swkotor2.png"
+  install -Dm644 "$srcdir/swkotor2-config_2_48x48x8.png" "$pkgdir/usr/share/pixmaps/swkotor2-config.png"
+  install -Dm644 "$srcdir/libswkotor2.sh" "$pkgdir/usr/lib/libswkotor2.sh"
+  install -Dm755 "$srcdir/swkotor2.sh" "$pkgdir/usr/bin/swkotor2"
+  install -Dm755 "$srcdir/swkotor2-config.sh" "$pkgdir/usr/bin/swkotor2-config"
+}
