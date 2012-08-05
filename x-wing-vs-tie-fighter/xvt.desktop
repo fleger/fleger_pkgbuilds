@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Star Wars: X-Wing vs. TIE Fighter
+GenericName=Flight Simulation
+GenericName[fr]=Simulation de vol
+Encoding=UTF-8
+Version=1.0
+Type=Application
+Terminal=false
+Icon=xvt
+Exec=xvt
+Categories=Game;Simulation;

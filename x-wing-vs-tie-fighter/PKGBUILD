@@ -1,0 +1,83 @@
+# Maintainer: Florian Léger <florian6 dot leger at laposte dot net>
+
+# Package Options - Can be overwritten by the environment
+
+# CD_DIR: path where your X-Wing vs. Tie Fighter CD-ROM is mounted.
+: ${CD_DIR:="$HOME/media/xvt.iso/"}
+
+_appname="xvt"
+pkgname=x-wing-vs-tie-fighter
+pkgdesc="Space flight and combat simulator set in the Star Wars universe (uses Wine, CD-ROM required)"
+pkgver=1.1.4
+pkgrel=1
+arch=(any)
+license=("custom")
+url="http://lucasarts.com/"
+depends=("modfs-git" "wine")
+makedepends=("icoutils" "convmv" "zip")
+
+source=("${_appname}.desktop"
+        "ftp://ftp.lucasarts.com/patches/pc/XVT_3DFX.exe"
+        "lib${_appname}.sh"
+        "${_appname}.sh"
+        "${_appname}.reg.in"
+        "01-user.conf"
+        "99-base.conf")
+md5sums=('4c3b046bcbead267eae7a7b2ecdf24db'
+         '0d8f2a071d3454b71bed2c9b8af053ab'
+         'c0b2f3a0f2eb94e24e77b2729a4d95dd'
+         'aa678245801cec048da3acc9d06c8048'
+         '8c960bc955174e08c6ee8a2397a60d42'
+         'c1549ac03b636273288afaf4046f3ad0'
+         'cd00a18110819f4e8213d90c5557388f')
+
+build() {
+  cd "${srcdir}"
+
+  zip -FF "XVT_3DFX.exe" --out patch.zip
+  bsdtar xf patch.zip
+  
+  wrestool -x -t group_icon "XwingTie.exe" > "${_appname}.ico"
+  icotool -x -i1  "${_appname}.ico"
+}
+
+package() {
+  local i
+  local baseDir="${pkgdir}/usr/share/games/${_appname}/base"
+  cd "${CD_DIR}/"
+
+  for i in  "./amovie/*" "./battle/*" "./bmovie/*" "./combat/*" "./cp*/*" "./frontres/*" "./ivfiles/*"  \
+            "./melee/*" "./resource/*" "./sfx/*" "./tourn/*" "./train/*" "./wave/*.*" "./wave/**/*"     \
+            "./*.txt" "./*.fnt" "./*.act" "./*.plo" "./*.abp" "./*.doc" "./*.key" "*.scg"; do
+    find . -iwholename "${i}" -exec install -Dm644 "{}" "${baseDir}/{}" \;
+  done
+
+  convmv --lower --notest -r "${baseDir}"
+
+  # Patch
+  cd "${srcdir}"
+  for i in *.txt XwingTie.exe z_xvt__.exe; do
+    install -Dm644 "$i" "$baseDir/${i,,*}"
+  done
+  for i in *.ACT; do
+    install -Dm644 "$i" "$baseDir/ivfiles/${i,,*}"
+  done
+  install -Dm644 top.lst "$baseDir/frontres/top.lst"
+
+  # Registry
+  install -Dm644 "${srcdir}/${_appname}.reg.in" "${pkgdir}/usr/share/games/${_appname}/${_appname}.reg.in"
+
+  # Modfs
+  install -Dm644 "${srcdir}/01-user.conf" "${pkgdir}/etc/${_appname}.d/01-user.conf"
+  install -Dm644 "${srcdir}/99-base.conf" "${pkgdir}/etc/${_appname}.d/99-base.conf"
+
+  # .desktop
+  install -Dm644 "${srcdir}/${_appname}.desktop" "${pkgdir}/usr/share/applications/${_appname}.desktop"
+
+  # Icon
+  install -Dm644 "${srcdir}/${_appname}_1_32x32x8.png" "${pkgdir}/usr/share/pixmaps/${_appname}.png"
+
+  # Shell scripts
+  install -Dm644 "${srcdir}/lib${_appname}.sh" "${pkgdir}/usr/lib/lib${_appname}.sh"
+  install -Dm755 "${srcdir}/${_appname}.sh" "${pkgdir}/usr/bin/${_appname}"
+}
