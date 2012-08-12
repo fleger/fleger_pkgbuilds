@@ -1,0 +1,4 @@
+REGEDIT4
+
+[HKEY_LOCAL_MACHINE\Software\LucasArts Entertainment Company\X-Wing vs. TIE Fighter\2.0]
+"Source Path"="@CD_DRIVE@"

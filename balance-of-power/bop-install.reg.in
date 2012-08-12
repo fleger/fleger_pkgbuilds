@@ -1,0 +1,10 @@
+REGEDIT4
+
+[HKEY_LOCAL_MACHINE\Software\LucasArts Entertainment Company\X-Wing vs. TIE Fighter]
+
+[HKEY_LOCAL_MACHINE\Software\LucasArts Entertainment Company\X-Wing vs. TIE Fighter\2.0]
+"Executable"="@APP_DIR_WINE@\\Z_xvt__.exe"
+"Install Path"="@APP_DIR_WINE@"
+"Registered"=dword:00000000
+"Source Path"="D:"
+"Version"="2.0"

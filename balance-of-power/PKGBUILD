@@ -1,0 +1,75 @@
+# Maintainer: Florian Léger <florian6 dot leger at laposte dot net>
+
+# Package Options - Can be overwritten by the environment
+
+# CD_DIR: path where your X-Wing vs. Tie Fighter: Balance Of Power CD-ROM is mounted.
+: ${CD_DIR:="$HOME/media/BALANCE.iso/"}
+
+_appname="xvt"
+pkgname=balance-of-power
+pkgdesc="X-Wing vs. Tie Fighter extension (uses Wine, CD-ROM required)"
+pkgver=2.0
+pkgrel=1
+arch=(any)
+license=("custom")
+url="http://lucasarts.com/"
+depends=("x-wing-vs-tie-fighter")
+makedepends=("convmv")
+source=("98-balance-of-power.conf"
+        "05-balance-of-power.sh"
+        "bop-install.reg.in"
+        "bop-cdrom.reg.in"
+        "setup.iss")
+md5sums=('f3ba00366e0a38d2d882e33f6c0b51ed'
+         '060d7b7eeeebdfabaf6f0cc01d16035e'
+         '62e0df705c591d8c3639a8713075983b'
+         'fa9d42c267d9fa1c852df176b9de0ebb'
+         'a674d87f6771eb255db8c99efa65eb41')
+
+
+installBop() {
+  > xwingtie.exe
+  DISPLAY="$1" wine "${CD_DIR}/install/setupex.exe" -s -f1"$(winepath -w "${srcdir}/setup.iss")"
+}
+
+
+build() {
+  . /usr/lib/libxvt.sh
+  
+  install -d "${srcdir}/wine"
+
+  WINEPREFIX="${srcdir}/wine" \
+  WINEDLLOVERRIDES="winemenubuilder.exe=d;mshtml=d;mscoree=d" \
+  XDG_DATA_HOME="${srcdir}" \
+  XDG_CONFIG_HOME="${srcdir}" \
+  DISPLAY= \
+  xvt.run xvt.hooks xvt installBop "$DISPLAY"
+  convmv --lower --notest -r "${srcdir}/${_appname}"
+  rm "${srcdir}/${_appname}/balanceofpower"/*.isu
+}
+
+package() {
+  local i
+  local -a fileList=()
+  local baseDir="${pkgdir}/usr/share/games/${_appname}/bop"
+  cd "${srcdir}/${_appname}/balanceofpower"
+  LANG=C md5sum -b * **/* > "$srcdir/bopmd5sums.txt" 2> /dev/null || true
+  cd "/usr/share/games/$_appname/base"
+  readarray -t fileList < <(LANG=C md5sum -c "$srcdir/bopmd5sums.txt" 2> /dev/null | grep FAILED | sed -r -e "s|^(.+):.*|\1|")
+
+  for i in "${fileList[@]}"; do
+    install -Dm644 "${srcdir}/${_appname}/balanceofpower/$i" "${baseDir}/${i}"
+  done
+
+  cd "$CD_DIR/movies/"
+  for i in *; do
+    install -Dm644 "$i" "${baseDir}/movies/${i,,*}"
+  done
+
+  # Modfs
+  install -Dm644 "${srcdir}/98-balance-of-power.conf" "${pkgdir}/etc/${_appname}/branches.d/98-balance-of-power.conf"
+  install -Dm644 "${srcdir}/05-balance-of-power.sh" "${pkgdir}/etc/${_appname}/hooks.d/05-balance-of-power.sh"
+  install -Dm644 "${srcdir}/05-balance-of-power.sh" "${pkgdir}/etc/${_appname}/hooks.d/05-balance-of-power.sh"
+  install -Dm644 "${srcdir}/bop-install.reg.in" "$baseDir/../bop-install.reg.in"
+  install -Dm644 "${srcdir}/bop-cdrom.reg.in" "$baseDir/../bop-cdrom.reg.in"
+}
