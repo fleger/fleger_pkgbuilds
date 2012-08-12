@@ -7,4 +7,4 @@ else
   . "/usr/lib/libxvt.sh"
 fi
 
-xvt.run wine z_xvt__.exe "$@"
+xvt.run xvt.hooks xvt wine z_xvt__.exe "$@"

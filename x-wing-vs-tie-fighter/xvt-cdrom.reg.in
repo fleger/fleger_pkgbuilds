@@ -1,0 +1,7 @@
+REGEDIT4
+
+[HKEY_LOCAL_MACHINE\Software\Wine\Drives]
+ "@CD_DRIVE@"="cdrom"
+
+[HKEY_LOCAL_MACHINE\Software\LucasArts Entertainment Company\X-Wing vs. TIE Fighter\1.0]
+"Source Path"="@CD_DRIVE@"
