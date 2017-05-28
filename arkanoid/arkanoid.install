@@ -2,6 +2,6 @@ APP_NAME=arkanoid
 
 post_install() {
   cat << EOM
-A dedicated DOSBox configuration file is created in \$XDG_CONFIG_HOME/$APP_NAME the first time $APP_NAME is started.
+A dedicated DOSBox configuration file is created in \$HOME/.config/$APP_NAME the first time $APP_NAME is started.
 EOM
 }

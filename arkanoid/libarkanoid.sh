@@ -1,4 +1,6 @@
 arkanoid.run() {
+  local XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/config}"
+  local XDG_DATA_HOME="${XDG_CONFIG_HOME:-$HOME/.local/share}"
   local APP_NAME="arkanoid"
   local TMPDIR="${TMPDIR:-/tmp}"
   local RW_BRANCH="${XDG_DATA_HOME}/${APP_NAME}"
