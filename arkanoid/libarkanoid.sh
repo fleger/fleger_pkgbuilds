@@ -4,7 +4,7 @@ arkanoid.run() {
   local APP_NAME="arkanoid"
   local TMPDIR="${TMPDIR:-/tmp}"
   local RW_BRANCH="${XDG_DATA_HOME}/${APP_NAME}"
-  local APP_DIR="${TMPDIR}/${APP_NAME}-tmp-${USER}"
+  local APP_DIR="${XDG_RUNTIME_DIR:-$TMPDIR/$USER}/${APP_NAME}"
   local BRANCHES_D="/etc/${APP_NAME}.d"
   local DOSBOX_CONF="${XDG_CONFIG_HOME}/${APP_NAME}/$(basename $(dosbox -printconf))"
   local __firstRun=false
