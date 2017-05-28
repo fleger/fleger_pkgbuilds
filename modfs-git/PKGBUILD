@@ -1,40 +1,27 @@
 #Maintainer: Florian Léger <florian6 dot leger at laposte dot net>
 pkgname=modfs-git
-pkgver=20110301
+pkgver=r4.4692b0c
 pkgrel=1
 pkgdesc="Wrapper around unionfs-fuse that uses a file-based branches configuration."
 arch=(any)
 url="https://gist.github.com/849049"
 license=('custom:WTFPL')
+provides=("${pkgname%-git}")
+conflicts=("${pkgname%-git}")
 groups=()
 depends=('unionfs-fuse')
 makedepends=('git')
-source=(http://sam.zoy.org/wtfpl/COPYING)
-md5sums=('389a9e29629d1f05e115f8f05c283df5')
+source=("${pkgname%-git}::git+https://github.com/gist/849049.git"
+        'http://www.wtfpl.net/txt/copying')
+md5sums=('SKIP'
+         '8365d07beeb5f39d87e846dca3ae7b64')
 
-_gitroot="http://github.com/gist/849049.git"
-_gitname="modfs"
-
-build() {
-  cd "$srcdir"
-  msg "Connecting to GIT server...."
-
-  if [ -d $_gitname ] ; then
-    cd $_gitname && git pull origin
-    msg "The local files are updated."
-  else
-    git clone $_gitroot $_gitname
-  fi
-
-  msg "GIT checkout done or server timeout"
-  msg "Starting make..."
-
-  rm -rf "$srcdir/$_gitname-build"
-  git clone "$srcdir/$_gitname" "$srcdir/$_gitname-build"
-  cd "$srcdir/$_gitname-build"
+pkgver() {
+  cd "${pkgname%-git}"
+  printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
 }
 
 package() {
-  install -Dm755 "$srcdir/$_gitname-build/modfs.sh" "$pkgdir/usr/bin/modfs"
-  install -Dm644 "$srcdir/COPYING" "$pkgdir/usr/share/licenses/$pkgname/COPYING"
+  install -Dm755 "$srcdir/${pkgname%-git}/modfs.sh" "$pkgdir/usr/bin/modfs"
+  install -Dm644 "$srcdir/copying" "$pkgdir/usr/share/licenses/$pkgname/COPYING"
 } 
